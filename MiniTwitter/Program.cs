@@ -1,4 +1,5 @@
 
+using Microsoft.EntityFrameworkCore;
 using MiniTwitter.Models;
 
 namespace MiniTwitter
@@ -14,7 +15,8 @@ namespace MiniTwitter
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-            builder.Services.AddDbContext<TwitterContext>();
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddDbContext<TwitterContext>(options => options.UseSqlServer(connectionString));
 
             var app = builder.Build();
 
