@@ -26,6 +26,12 @@ namespace MiniTwitter.Controllers
                 return BadRequest(ModelState);
             }
 
+            var existing = await _userManager.FindByEmailAsync(model.Email);
+            if (existing != null)
+            {
+                return BadRequest(new { error = "Email already in use." });
+            }
+
             var user = new ApplicationUser
             {
                 UserName = model.Username,
@@ -45,6 +51,33 @@ namespace MiniTwitter.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if(user == null)
+            {
+                return Unauthorized(new { error = "Invalid email or password." });
+            }
+
+            var passwordCheck = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
+
+            if (!passwordCheck.Succeeded)
+            {
+                return Unauthorized(new { error = "Invalid email or password." });
+            }
+
+            await _signInManager.SignInAsync(user, true);
+
+            return Ok("Signed in!");            
         }
     }
 }
