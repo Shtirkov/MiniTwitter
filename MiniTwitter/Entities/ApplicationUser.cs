@@ -2,7 +2,7 @@
 
 namespace MiniTwitter.Models
 {
-    public class ApplicationUserModel : IdentityUser
+    public class ApplicationUser : IdentityUser
     {
     }
 }

@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MiniTwitter.Models;
+using MiniTwitter;
 
 #nullable disable
 
 namespace MiniTwitter.Migrations
 {
     [DbContext(typeof(TwitterContext))]
-    [Migration("20250816134731_initialMigration")]
-    partial class initialMigration
+    [Migration("20250817113521_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

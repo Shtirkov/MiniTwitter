@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace MiniTwitter.Models
+namespace MiniTwitter
 {
     public class TwitterContext : DbContext
     {
