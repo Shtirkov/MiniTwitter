@@ -14,5 +14,26 @@ namespace MiniTwitter
         }
 
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Friendship> Friendships { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<Friendship>()
+                .HasKey(f => new { f.UserId, f.FriendId });
+
+            builder.Entity<Friendship>()
+                .HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Friendship>()
+                .HasOne(f => f.Friend)
+                .WithMany()
+                .HasForeignKey(f => f.FriendId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MiniTwitter.Entities;
 using MiniTwitter.Models;
 using MiniTwitter.ViewModels;
@@ -45,6 +46,42 @@ namespace MiniTwitter.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Post created!", postId = post.Id });
+        }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetPostsByUser(string userId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var isFriend = await _context
+                .Friendships
+                .AnyAsync(f => f.UserId == user.Id && f.FriendId == userId && f.IsConfirmed 
+                || f.UserId == userId && f.FriendId == user.Id && f.IsConfirmed);            
+
+            if (!isFriend)
+            {
+                return Forbid();
+            }
+
+            var posts = await _context
+                        .Posts
+                        .Where(p => p.AuthorId == userId)
+                        .OrderByDescending(p => p.CreatedAt)
+                        .Select(p => new
+                        {
+                            p.Id,
+                            p.Content,
+                            p.CreatedAt,
+                            Author = p.Author.UserName
+                        })
+                        .ToListAsync();
+
+            return Ok(posts);
         }
     }
 }
