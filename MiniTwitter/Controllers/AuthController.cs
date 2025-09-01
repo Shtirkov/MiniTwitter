@@ -29,7 +29,7 @@ namespace MiniTwitter.Controllers
             var existing = await _userManager.FindByEmailAsync(model.Email);
             if (existing != null)
             {
-                return BadRequest(new { error = "Email already in use." });
+                return BadRequest("Email already in use.");
             }
 
             var user = new ApplicationUser
@@ -42,7 +42,7 @@ namespace MiniTwitter.Controllers
 
             if (result.Succeeded)
             {
-                return Ok(new { Message = "User registered successfully" });
+                return Ok("User registered successfully");
             }
 
             foreach (var error in result.Errors)
@@ -63,21 +63,35 @@ namespace MiniTwitter.Controllers
 
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            if(user == null)
+            if (user == null)
             {
-                return Unauthorized(new { error = "Invalid email or password." });
+                return Unauthorized("Invalid email or password.");
             }
 
             var passwordCheck = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
 
             if (!passwordCheck.Succeeded)
             {
-                return Unauthorized(new { error = "Invalid email or password." });
+                return Unauthorized("Invalid email or password.");
             }
 
-            await _signInManager.SignInAsync(user, true);
+            await _signInManager.SignInAsync(user, false);
 
-            return Ok("Signed in!");            
+            return Ok("Signed in!");
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var user = HttpContext.User;
+
+            if (!_signInManager.IsSignedIn(user))
+            {
+                return Unauthorized("User not signed in");
+            }
+
+            await _signInManager.SignOutAsync();
+            return Ok("Signed out!");
         }
     }
 }
