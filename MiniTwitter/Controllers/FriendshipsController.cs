@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniTwitter.Models;
+using MiniTwitter.ResponseModels;
 
 namespace MiniTwitter.Controllers
 {
@@ -95,22 +96,79 @@ namespace MiniTwitter.Controllers
 
             if (friend == null)
             {
-                return NotFound(new { error = "Such user do not exist" });
+                return NotFound(new { error = "Such user does not exist" });
             }
 
-            var requestToAccept = await _context
+            var request = await _context
                                 .Friendships
                                 .FirstOrDefaultAsync(x => x.UserId == friend.Id && x.FriendId == user.Id && !x.IsConfirmed);
 
-            if (requestToAccept == null)
+            if (request == null)
             {
-                return NotFound(new { message = "No pending friendship requests" });
+                return NotFound(new { message = "No pending request from this user." });
             }
 
-            requestToAccept.IsConfirmed = true;
+            request.IsConfirmed = true;
 
             await _context.SaveChangesAsync();
             return Ok(new { message = "Friend request accepted." });
+        }
+
+        [HttpDelete("reject/{username}")]
+        public async Task<IActionResult> RejectFriendRequestAsync(string username)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized(new { error = "User not logged in." });
+            }
+
+            var friend = await _context
+                        .Users
+                        .FirstOrDefaultAsync(u => u.UserName == username);
+
+            if (friend == null)
+            {
+                return NotFound(new { error = "Such user does not exist" });
+            }
+
+            var request = await _context
+                                .Friendships
+                                .FirstOrDefaultAsync(x => x.UserId == friend.Id && x.FriendId == user.Id && !x.IsConfirmed);
+
+            if (request == null)
+            {
+                return NotFound(new { message = "No pending request from this user." });
+            }
+
+            _context.Friendships.Remove(request);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpGet("friends")]
+        public async Task<IActionResult> GetFriendsListAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized(new { error = "User not logged in." });
+            }
+
+            var friends = await _context
+                        .Friendships
+                        .Where(f => f.UserId == user.Id && f.IsConfirmed)
+                        .Select(f => new FriendDto
+                        {
+                            Email = f.Friend.Email!,
+                            UserName = f.Friend.UserName!
+                        })
+                        .ToListAsync();
+
+            return Ok(friends);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace MiniTwitter.Controllers
             var existing = await _userManager.FindByEmailAsync(model.Email);
             if (existing != null)
             {
-                return BadRequest("Email already in use.");
+                return BadRequest(new { message = "Email already in use." });
             }
 
             var user = new ApplicationUser
@@ -42,7 +42,7 @@ namespace MiniTwitter.Controllers
 
             if (result.Succeeded)
             {
-                return Ok("User registered successfully");
+                return Ok(new { message = "User registered successfully" });
             }
 
             foreach (var error in result.Errors)
@@ -65,19 +65,19 @@ namespace MiniTwitter.Controllers
 
             if (user == null)
             {
-                return Unauthorized("Invalid email or password.");
+                return Unauthorized(new { message = "Invalid email or password." });
             }
 
             var passwordCheck = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
 
             if (!passwordCheck.Succeeded)
             {
-                return Unauthorized("Invalid email or password.");
+                return Unauthorized(new { message = "Invalid email or password." });
             }
 
             await _signInManager.SignInAsync(user, false);
 
-            return Ok("Signed in!");
+            return Ok(new { message = "Signed in!" });
         }
 
         [HttpPost("logout")]
@@ -87,11 +87,11 @@ namespace MiniTwitter.Controllers
 
             if (!_signInManager.IsSignedIn(user))
             {
-                return Unauthorized("User not signed in");
+                return Unauthorized(new { message = "User not signed in" });
             }
 
             await _signInManager.SignOutAsync();
-            return Ok("Signed out!");
+            return Ok(new { message = "Signed out!" });
         }
     }
 }
