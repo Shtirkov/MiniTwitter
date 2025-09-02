@@ -21,7 +21,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreatePost([FromBody] CreatePostViewModel model)
+        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -49,7 +49,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetPostsByUser(string userId)
+        public async Task<IActionResult> GetPostsByUserAsync(string userId)
         {
             var user = await _userManager.GetUserAsync(User);
 
