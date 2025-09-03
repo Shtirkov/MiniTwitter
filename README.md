@@ -35,8 +35,8 @@ The goal is to build **basic social media features** while practicing **ASP.NET 
 ---
 
 ## 🎯 Roadmap:
-✅ Basic backend with ASP.NET Core
-✅ User authentication and posts CRUD
-✅ Friendships (requests, accept/reject)
-⏳ JWT Authentication
-⏳ React frontend
+  - ✅ Basic backend with ASP.NET Core
+  - ✅ User authentication and posts CRUD
+  - ✅ Friendships (requests, accept/reject)
+  - ⏳ JWT Authentication
+  - ⏳ React frontend
