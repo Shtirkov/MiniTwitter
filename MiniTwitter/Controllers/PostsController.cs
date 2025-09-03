@@ -48,29 +48,35 @@ namespace MiniTwitter.Controllers
             return Ok(new { message = "Post created!", postId = post.Id });
         }
 
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetPostsByUserAsync(string userId)
+        [HttpGet("user/{username}")]
+        public async Task<IActionResult> GetPostsByUserAsync(string username)
         {
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
             {
-                return Unauthorized();
+                return Unauthorized(new { error = "User not logged in." });
             }
 
-            var isFriend = await _context
-                .Friendships
-                .AnyAsync(f => f.UserId == user.Id && f.FriendId == userId && f.IsConfirmed 
-                || f.UserId == userId && f.FriendId == user.Id && f.IsConfirmed);            
+            var targetUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            if (targetUser == null)
+            {
+                return NotFound(new { error = "User not found." });
+            }
 
-            if (!isFriend)
+            var isFriend = await _context.Friendships.AnyAsync(f =>
+                (f.UserId == user.Id && f.FriendId == targetUser.Id ||
+                 f.UserId == targetUser.Id && f.FriendId == user.Id)
+                && f.IsConfirmed);
+
+            if (!isFriend && user != targetUser)
             {
                 return Forbid();
             }
 
             var posts = await _context
                         .Posts
-                        .Where(p => p.AuthorId == userId)
+                        .Where(p => p.Author.UserName == username)
                         .OrderByDescending(p => p.CreatedAt)
                         .Select(p => new
                         {
@@ -87,9 +93,31 @@ namespace MiniTwitter.Controllers
         [HttpDelete("delete/{postId}")]
         public async Task<IActionResult> DeletePostAsync(int postId)
         {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized(new { error = "User not logged in." });
+            }
+
             var post = await _context
                             .Posts
-                            .FirstOrDefaultAsync(p => p.Id == postId)
+                            .FirstOrDefaultAsync(p => p.Id == postId);
+
+            if (post == null)
+            {
+                return NotFound(new { error = "There is no such post." });
+            }
+
+            if (post.Author.Id != user.Id)
+            {
+                return Forbid();
+            }            
+
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
