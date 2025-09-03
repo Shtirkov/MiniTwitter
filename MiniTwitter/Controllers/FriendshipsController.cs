@@ -163,8 +163,8 @@ namespace MiniTwitter.Controllers
                         .Where(f => (f.UserId == user.Id || f.FriendId == user.Id) && f.IsConfirmed)
                         .Select(f => new FriendDto
                         {
-                            Email = f.Friend.Email!,
-                            UserName = f.Friend.UserName!
+                            Email = user.Email == f.User.Email! ? f.Friend.Email! : f.User.Email!,
+                            UserName = user.Id == f.UserId! ? f.Friend.UserName! : f.User.UserName!
                         })
                         .ToListAsync();
 
