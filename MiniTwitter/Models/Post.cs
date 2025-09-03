@@ -11,16 +11,16 @@ namespace MiniTwitter.Entities
         public int Id { get; set; }
 
         [Required]
-        public string AuthorId { get; set; }
+        public string AuthorId { get; set; } = string.Empty;
 
         [ForeignKey(nameof(AuthorId))]
         public ApplicationUser Author { get; set; }
 
         [Required]
         [MaxLength(280)]
-        public string Content { get; set; }
+        public string Content { get; set; } = string.Empty;
 
         [Required]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

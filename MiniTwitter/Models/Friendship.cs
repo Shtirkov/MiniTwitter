@@ -2,11 +2,11 @@
 {
     public class Friendship
     {
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         public ApplicationUser User { get; set; }
 
-        public string FriendId { get; set; }
+        public string FriendId { get; set; } = string.Empty;
 
         public ApplicationUser Friend { get; set; }
 

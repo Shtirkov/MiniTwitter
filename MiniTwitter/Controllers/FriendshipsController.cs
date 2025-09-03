@@ -160,7 +160,7 @@ namespace MiniTwitter.Controllers
 
             var friends = await _context
                         .Friendships
-                        .Where(f => f.UserId == user.Id && f.IsConfirmed)
+                        .Where((f => f.UserId == user.Id || f.FriendId == user.Id) && f.IsConfirmed)
                         .Select(f => new FriendDto
                         {
                             Email = f.Friend.Email!,

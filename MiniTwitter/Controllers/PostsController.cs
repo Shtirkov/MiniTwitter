@@ -83,5 +83,13 @@ namespace MiniTwitter.Controllers
 
             return Ok(posts);
         }
+
+        [HttpDelete("delete/{postId}")]
+        public async Task<IActionResult> DeletePostAsync(int postId)
+        {
+            var post = await _context
+                            .Posts
+                            .FirstOrDefaultAsync(p => p.Id == postId)
+        }
     }
 }

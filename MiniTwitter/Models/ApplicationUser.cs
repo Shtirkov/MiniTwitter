@@ -5,11 +5,6 @@ namespace MiniTwitter.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public ICollection<Post> Posts { get; set; }
-
-        public ApplicationUser()
-        {
-            Posts = new List<Post>();
-        }
+        public ICollection<Post> Posts { get; set; } = new List<Post>();
     }
 }
