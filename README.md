@@ -42,8 +42,8 @@ The goal is to build **basic social media features** while practicing **ASP.NET 
    cd MiniTwitter
    ```
 2. **Configure the database**
-  Make sure you have SQL Server running locally
-  Update ConnectionStrings:DefaultConnection in appsettings.json
+  - Make sure you have SQL Server running locally
+  - Update ConnectionStrings:DefaultConnection in appsettings.json
 
 3. **Apply migrations and update the database**
    ```bash
