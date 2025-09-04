@@ -71,4 +71,4 @@ The goal is to build **basic social media features** while practicing **ASP.NET 
 - It is being developed to practice back-end and later front-end skills.
 
 👨‍💻 Author
-Developed by @Shtirkov
+- Developed by @Shtirkov
