@@ -48,7 +48,7 @@ The goal is to build **basic social media features** while practicing **ASP.NET 
 3. **Apply migrations and update the database**
    ```bash
    dotnet ef database update
-    ```
+   ```
 4. **Run the project**
   ```bash
   dotnet run
