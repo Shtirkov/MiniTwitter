@@ -37,10 +37,10 @@ The goal is to build **basic social media features** while practicing **ASP.NET 
 ## ⚡ Getting Started
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Shtirkov/MiniTwitter.git
-   cd MiniTwitter
-   ```
+  ```bash
+  git clone https://github.com/Shtirkov/MiniTwitter.git
+  cd MiniTwitter
+  ```
 2. **Configure the database**
   - Make sure you have SQL Server running locally
   - Update ConnectionStrings:DefaultConnection in appsettings.json
