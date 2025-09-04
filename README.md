@@ -46,9 +46,9 @@ The goal is to build **basic social media features** while practicing **ASP.NET 
   - Update ConnectionStrings:DefaultConnection in appsettings.json
 
 3. **Apply migrations and update the database**
-   ```bash
-   dotnet ef database update
-   ```
+  ```bash
+  dotnet ef database update
+  ```
 4. **Run the project**
   ```bash
   dotnet run
@@ -67,8 +67,8 @@ The goal is to build **basic social media features** while practicing **ASP.NET 
 
 📖 Note
 
-This project is for educational purposes only and is not production-ready.
-It is being developed to practice back-end and later front-end skills.
+- This project is for educational purposes only and is not production-ready.
+- It is being developed to practice back-end and later front-end skills.
 
 👨‍💻 Author
 Developed by @Shtirkov
