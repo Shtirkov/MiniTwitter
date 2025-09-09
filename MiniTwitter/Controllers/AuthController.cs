@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MiniTwitter.Interfaces;
 using MiniTwitter.Models;
 using MiniTwitter.ViewModels;
 
@@ -9,13 +10,11 @@ namespace MiniTwitter.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IAuthService _authService;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AuthController(IAuthService authService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _authService = authService;
         }
 
         [HttpPost("register")]
@@ -26,7 +25,7 @@ namespace MiniTwitter.Controllers
                 return BadRequest(ModelState);
             }
 
-            var existing = await _userManager.FindByEmailAsync(model.Email);
+            var existing = await _authService.FindUserByEmailAsync(model.Email);
             if (existing != null)
             {
                 return BadRequest(new { message = "Email already in use." });
@@ -38,7 +37,7 @@ namespace MiniTwitter.Controllers
                 Email = model.Email
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _authService.CreateUserAsync(user, model.Password);
 
             if (result.Succeeded)
             {
@@ -61,21 +60,21 @@ namespace MiniTwitter.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _authService.FindUserByEmailAsync(model.Email);
 
             if (user == null)
             {
                 return Unauthorized(new { message = "Invalid email or password." });
             }
 
-            var passwordCheck = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
+            var passwordCheck = await _authService.CheckUserPasswordAsync(user, model.Password, true);
 
             if (!passwordCheck.Succeeded)
             {
                 return Unauthorized(new { message = "Invalid email or password." });
             }
 
-            await _signInManager.SignInAsync(user, false);
+            await _authService.SignInAsync(user, false);
 
             return Ok(new { message = "Signed in!" });
         }
@@ -85,12 +84,12 @@ namespace MiniTwitter.Controllers
         {
             var user = HttpContext.User;
 
-            if (!_signInManager.IsSignedIn(user))
+            if (!_authService.IsSignedIn(user))
             {
                 return Unauthorized(new { message = "User not signed in" });
             }
 
-            await _signInManager.SignOutAsync();
+            await _authService.SignOutAsync();
             return Ok(new { message = "Signed out!" });
         }
     }
