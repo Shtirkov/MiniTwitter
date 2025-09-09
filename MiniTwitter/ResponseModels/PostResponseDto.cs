@@ -1,6 +1,6 @@
 ﻿namespace MiniTwitter.ResponseModels
 {
-    public class PostDto
+    public class PostResponseDto
     {
         public int Id { get; set; }
 

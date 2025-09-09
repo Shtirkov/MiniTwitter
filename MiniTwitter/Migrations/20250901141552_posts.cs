@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MiniTwitter.Migrations
 {
     /// <inheritdoc />
-    public partial class posts : Migration
+    public partial class Posts : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

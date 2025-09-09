@@ -19,7 +19,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -54,7 +54,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
         {
             if (!ModelState.IsValid)
             {

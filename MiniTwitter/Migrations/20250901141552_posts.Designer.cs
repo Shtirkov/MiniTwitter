@@ -13,7 +13,7 @@ namespace MiniTwitter.Migrations
 {
     [DbContext(typeof(TwitterContext))]
     [Migration("20250901141552_posts")]
-    partial class posts
+    partial class Posts
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

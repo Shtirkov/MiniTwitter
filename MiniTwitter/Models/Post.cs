@@ -14,7 +14,8 @@ namespace MiniTwitter.Entities
         public string AuthorId { get; set; } = string.Empty;
 
         [ForeignKey(nameof(AuthorId))]
-        public ApplicationUser Author { get; set; }
+
+        public required ApplicationUser Author { get; set; }
 
         [Required]
         [MaxLength(280)]

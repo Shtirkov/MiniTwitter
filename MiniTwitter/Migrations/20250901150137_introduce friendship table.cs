@@ -5,7 +5,7 @@
 namespace MiniTwitter.Migrations
 {
     /// <inheritdoc />
-    public partial class introducefriendshiptable : Migration
+    public partial class Introducefriendshiptable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

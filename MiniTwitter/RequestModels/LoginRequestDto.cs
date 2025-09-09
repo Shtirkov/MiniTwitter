@@ -2,15 +2,15 @@
 
 namespace MiniTwitter.ViewModels
 {
-    public class LoginViewModel
+    public class LoginRequestDto
     {
         [Required]
         [EmailAddress]
         [MaxLength(255)]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(255)]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
     }
 }

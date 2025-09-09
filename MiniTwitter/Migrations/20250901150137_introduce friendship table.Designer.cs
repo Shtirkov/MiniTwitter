@@ -13,7 +13,7 @@ namespace MiniTwitter.Migrations
 {
     [DbContext(typeof(TwitterContext))]
     [Migration("20250901150137_introduce friendship table")]
-    partial class introducefriendshiptable
+    partial class Introducefriendshiptable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
