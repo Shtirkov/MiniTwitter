@@ -23,7 +23,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePost model)
+        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostViewModel model)
         {
             if (!ModelState.IsValid)
             {
