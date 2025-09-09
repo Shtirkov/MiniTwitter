@@ -31,6 +31,11 @@ namespace MiniTwitter.Services
             return await _userManager.FindByEmailAsync(email);
         }
 
+        public async Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal principal)
+        {
+            return await _userManager.GetUserAsync(principal);
+        }
+
         public bool IsSignedIn(ClaimsPrincipal user)
         {
             return _signInManager.IsSignedIn(user);
@@ -44,6 +49,11 @@ namespace MiniTwitter.Services
         public async Task SignOutAsync()
         {
             await _signInManager.SignOutAsync();
+        }
+
+        public async Task<ApplicationUser?> FindUserByUsernameAsync(string username)
+        {
+            return await _userManager.FindByNameAsync(username);
         }
     }
 }

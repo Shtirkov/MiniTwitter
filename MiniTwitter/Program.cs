@@ -22,6 +22,7 @@ namespace MiniTwitter
             builder.Services.AddDbContext<TwitterContext>(options => options.UseSqlServer(connectionString));
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<TwitterContext>().AddDefaultTokenProviders();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IFriendshipsService, FriendshipsService>();
 
             var app = builder.Build();
 
