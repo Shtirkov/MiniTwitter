@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniTwitter.Entities;
+using MiniTwitter.Migrations;
 using MiniTwitter.Models;
+using MiniTwitter.ResponseModels;
 using MiniTwitter.ViewModels;
 
 namespace MiniTwitter.Controllers
@@ -21,7 +23,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostViewModel model)
+        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePost model)
         {
             if (!ModelState.IsValid)
             {
@@ -90,6 +92,77 @@ namespace MiniTwitter.Controllers
             return Ok(posts);
         }
 
+        [HttpGet("feed")]
+        public async Task<IActionResult> PopulateFeed()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized(new { error = "User not logged in." });
+            }
+
+            var friends = await _context
+                           .Friendships
+                           .Where(f => (f.UserId == user.Id || f.FriendId == user.Id) && f.IsConfirmed)
+                           .Select(f => f.UserId == user.Id ? f.FriendId : f.UserId)
+                           .ToListAsync();
+
+            var postsToDisplay = await _context
+                                .Posts
+                                .Where(p => friends.Contains(p.AuthorId) && p.AuthorId != user.Id)
+                                .OrderByDescending(p => p.CreatedAt)
+                                .Select(p => new PostDto
+                                {
+                                    Id = p.Id,
+                                    Content = p.Content,
+                                    Author = p.Author.UserName!,
+                                    CreatedAt = p.CreatedAt
+                                })
+                                .ToListAsync();
+
+            if (postsToDisplay.Any())
+            {
+                return Ok(postsToDisplay);
+            }
+
+            var defaultPosts = new List<PostDto>()
+            {
+                new PostDto
+                {
+                    Id = -1,
+                    Content = "Default post 1",
+                    Author = "System"
+                },
+                new PostDto
+                {
+                    Id= -2,
+                    Content = "Default post 2",
+                    Author = "System"
+                },
+                new PostDto
+                {
+                    Id= -3,
+                    Content = "Default post 3",
+                    Author = "System"
+                },
+                new PostDto
+                {
+                    Id= -4,
+                    Content = "Default post 4",
+                    Author= "System"
+                },
+                new PostDto
+                {
+                    Id= -5,
+                    Content = "Default post 5",
+                    Author = "System"
+                }
+            };
+
+            return Ok(defaultPosts);
+        }
+
         [HttpDelete("delete/{postId}")]
         public async Task<IActionResult> DeletePostAsync(int postId)
         {
@@ -112,7 +185,7 @@ namespace MiniTwitter.Controllers
             if (post.Author.Id != user.Id)
             {
                 return Forbid();
-            }            
+            }
 
             _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
