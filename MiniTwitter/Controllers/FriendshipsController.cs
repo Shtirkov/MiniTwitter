@@ -20,7 +20,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpPost("send/{username}")]
-        public async Task<IActionResult> SendFriendRequestAsync(string username)
+        public async Task<IActionResult> SendFriendRequest(string username)
         {
             var friendToAdd = await _authService.FindUserByUsernameAsync(username);
 
@@ -72,7 +72,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpPut("accept/{username}")]
-        public async Task<IActionResult> AcceptFriendRequestAsync(string username)
+        public async Task<IActionResult> AcceptFriendRequest(string username)
         {
             var user = await _authService.GetUserAsync(User);
 
@@ -102,7 +102,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpDelete("reject/{username}")]
-        public async Task<IActionResult> RejectFriendRequestAsync(string username)
+        public async Task<IActionResult> RejectFriendRequest(string username)
         {
             var user = await _authService.GetUserAsync(User);
 
@@ -132,7 +132,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpGet("friends")]
-        public async Task<IActionResult> GetFriendsListAsync()
+        public async Task<IActionResult> GetFriendsList()
         {
             var user = await _authService.GetUserAsync(User);
 

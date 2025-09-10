@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MiniTwitter.Interfaces;
@@ -24,6 +23,7 @@ namespace MiniTwitter
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IFriendshipsService, FriendshipsService>();
             builder.Services.AddScoped<IPostsService, PostsService>();
+            builder.Services.AddScoped<ICommentsService, CommentsService>();
 
             var app = builder.Build();
 

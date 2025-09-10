@@ -247,6 +247,38 @@ namespace MiniTwitter.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("MiniTwitter.Models.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(280)
+                        .HasColumnType("nvarchar(280)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("MiniTwitter.Models.Friendship", b =>
                 {
                     b.Property<string>("UserId")
@@ -327,6 +359,25 @@ namespace MiniTwitter.Migrations
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("MiniTwitter.Models.Comment", b =>
+                {
+                    b.HasOne("MiniTwitter.Models.ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MiniTwitter.Entities.Post", "Post")
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("MiniTwitter.Models.Friendship", b =>
                 {
                     b.HasOne("MiniTwitter.Models.ApplicationUser", "Friend")
@@ -344,6 +395,11 @@ namespace MiniTwitter.Migrations
                     b.Navigation("Friend");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MiniTwitter.Entities.Post", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("MiniTwitter.Models.ApplicationUser", b =>

@@ -15,6 +15,7 @@ namespace MiniTwitter
 
         public DbSet<Post> Posts { get; set; }
         public DbSet<Friendship> Friendships { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -33,6 +34,18 @@ namespace MiniTwitter
                 .HasOne(f => f.Friend)
                 .WithMany()
                 .HasForeignKey(f => f.FriendId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Comment>()
+                .HasOne(c => c.Post)
+                .WithMany(p => p.Comments)
+                .HasForeignKey(c => c.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Comment>()
+                .HasOne(c => c.Author)
+                .WithMany()
+                .HasForeignKey(c => c.AuthorId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

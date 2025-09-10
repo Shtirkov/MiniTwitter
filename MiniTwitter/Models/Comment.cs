@@ -1,19 +1,22 @@
-﻿using MiniTwitter.Models;
+﻿using MiniTwitter.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MiniTwitter.Entities
+namespace MiniTwitter.Models
 {
-    public class Post
+    public class Comment
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
-        public string AuthorId { get; set; } = string.Empty;
+        public int PostId { get; set; }
 
-        [ForeignKey(nameof(AuthorId))]
+        public required Post Post { get; set; }
+
+        [Required]
+        public string AuthorId { get; set; } = string.Empty;
 
         public required ApplicationUser Author { get; set; }
 
@@ -23,7 +26,5 @@ namespace MiniTwitter.Entities
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

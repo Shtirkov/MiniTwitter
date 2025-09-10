@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MiniTwitter.ViewModels
+namespace MiniTwitter.RequestModels
 {
-    public class CreatePostRequestDto
+    public class EditCommentRequestDto
     {
         [Required]
         [MaxLength(280)]

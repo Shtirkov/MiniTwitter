@@ -1,21 +1,17 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MiniTwitter.Entities;
 using MiniTwitter.Interfaces;
 using MiniTwitter.Models;
-using MiniTwitter.ResponseModels;
 
 namespace MiniTwitter.Services
 {
     public class PostsService : IPostsService
     {
         private readonly TwitterContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public PostsService(TwitterContext context, UserManager<ApplicationUser> userManager)
+        public PostsService(TwitterContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
         public async Task AddAsync(Post post)
         {
@@ -44,6 +40,8 @@ namespace MiniTwitter.Services
         {
             return await _context
                          .Posts
+                         .Include(p => p.Comments)
+                         .ThenInclude(c => c.Author)
                          .Where(p => p.Author!.UserName == username)
                          .OrderByDescending(p => p.CreatedAt)
                          .ToListAsync();

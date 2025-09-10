@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MiniTwitter.Entities;
 using MiniTwitter.Interfaces;
+using MiniTwitter.Mappers;
 using MiniTwitter.ResponseModels;
 using MiniTwitter.ViewModels;
 
@@ -22,7 +23,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostRequestDto model)
+        public async Task<IActionResult> CreatePost([FromBody] CreatePostRequestDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -50,7 +51,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpGet("user/{username}")]
-        public async Task<IActionResult> GetPostsByUserAsync(string username)
+        public async Task<IActionResult> GetPostsByUser(string username)
         {
             var user = await _authService.GetUserAsync(User);
 
@@ -74,13 +75,14 @@ namespace MiniTwitter.Controllers
 
             var posts = await _postsService.GetPostsByUserAsync(username);
 
-            var postsDto = posts
+            var postsDto = posts          
                         .Select(p => new PostResponseDto
                         {
                             Id = p.Id,
                             Content = p.Content,
                             CreatedAt = p.CreatedAt,
-                            Author = p.Author!.UserName!
+                            Author = p.Author.UserName!,
+                            Comments = p.Comments.Select(c => c.ToCommentDto()).ToList()
                         })
                         .ToList();
 
@@ -89,7 +91,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpGet("feed")]
-        public async Task<IActionResult> PopulateFeedAsync()
+        public async Task<IActionResult> PopulateFeed()
         {
             var user = await _authService.GetUserAsync(User);
 
@@ -110,7 +112,8 @@ namespace MiniTwitter.Controllers
                     Id = p.Id,
                     Content = p.Content,
                     Author = p.Author!.UserName!,
-                    CreatedAt = p.CreatedAt
+                    CreatedAt = p.CreatedAt,
+                    Comments = p.Comments.Select(c => c.ToCommentDto()).ToList()
                 });
 
                 return Ok(postsDto);
@@ -155,7 +158,7 @@ namespace MiniTwitter.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<IActionResult> DeletePostAsync([FromRoute] int id)
+        public async Task<IActionResult> DeletePost([FromRoute] int id)
         {
             var user = await _authService.GetUserAsync(User);
 
