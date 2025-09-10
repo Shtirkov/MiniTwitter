@@ -42,18 +42,13 @@ namespace MiniTwitter.Services
                || f.UserId == friend.Id && f.FriendId == user.Id && f.IsConfirmed);
         }
 
-        public async Task<List<FriendResponseDto>> GetFriendsAsync(ApplicationUser user)
+        public async Task<List<Friendship>> GetFriendsAsync(ApplicationUser user)
         {
             return await _context
                 .Friendships
                 .Where(f => (f.UserId == user.Id || f.FriendId == user.Id) && f.IsConfirmed)
                 .Include(f => f.User)
-                .Include(f => f.Friend)
-                .Select(f => new FriendResponseDto
-                {
-                    UserName = f.UserId == user.Id ? f.Friend.UserName! : f.User.UserName!,
-                    Email = f.UserId == user.Id ? f.Friend.Email! : f.User.Email!
-                })
+                .Include(f => f.Friend)                
                 .ToListAsync();
         }
 

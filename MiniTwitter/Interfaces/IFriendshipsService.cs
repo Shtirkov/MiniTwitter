@@ -17,6 +17,6 @@ namespace MiniTwitter.Interfaces
 
         public void Remove(Friendship friendship);
 
-        public Task<List<FriendResponseDto>> GetFriendsAsync(ApplicationUser user);
+        public Task<List<Friendship>> GetFriendsAsync(ApplicationUser user);
     }
 }

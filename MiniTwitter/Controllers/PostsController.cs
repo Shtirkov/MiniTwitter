@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using MiniTwitter.Entities;
-using MiniTwitter.Models;
+using MiniTwitter.Interfaces;
 using MiniTwitter.ResponseModels;
 using MiniTwitter.ViewModels;
 
@@ -12,13 +10,15 @@ namespace MiniTwitter.Controllers
     [Route("api/[controller]")]
     public class PostsController : ControllerBase
     {
-        private readonly TwitterContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthService _authService;
+        private readonly IFriendshipsService _friendshipsService;
+        private readonly IPostsService _postsService;
 
-        public PostsController(TwitterContext context, UserManager<ApplicationUser> userManager)
+        public PostsController(IAuthService authService, IFriendshipsService friendshipsService, IPostsService postsService)
         {
-            _context = context;
-            _userManager = userManager;
+            _authService = authService;
+            _friendshipsService = friendshipsService;
+            _postsService = postsService;
         }
 
         [HttpPost("create")]
@@ -29,7 +29,7 @@ namespace MiniTwitter.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _authService.GetUserAsync(User);
 
             if (user == null)
             {
@@ -43,8 +43,8 @@ namespace MiniTwitter.Controllers
                 CreatedAt = DateTime.UtcNow
             };
 
-            _context.Posts.Add(post);
-            await _context.SaveChangesAsync();
+            await _postsService.AddAsync(post);
+            await _postsService.SaveChangesAsync();
 
             return Ok(new { message = "Post created!", postId = post.Id });
         }
@@ -52,77 +52,68 @@ namespace MiniTwitter.Controllers
         [HttpGet("user/{username}")]
         public async Task<IActionResult> GetPostsByUserAsync(string username)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _authService.GetUserAsync(User);
 
             if (user == null)
             {
                 return Unauthorized(new { error = "User not logged in." });
             }
 
-            var targetUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            var targetUser = await _authService.FindUserByUsernameAsync(username);
             if (targetUser == null)
             {
                 return NotFound(new { error = "User not found." });
             }
 
-            var isFriend = await _context.Friendships.AnyAsync(f =>
-                (f.UserId == user.Id && f.FriendId == targetUser.Id ||
-                 f.UserId == targetUser.Id && f.FriendId == user.Id)
-                && f.IsConfirmed);
+            var isFriend = await _friendshipsService.CheckIfUsersAreFriendsAsync(user, targetUser);
 
             if (!isFriend && user != targetUser)
             {
                 return Forbid();
             }
 
-            var posts = await _context
-                        .Posts
-                        .Where(p => p.Author!.UserName == username)
-                        .OrderByDescending(p => p.CreatedAt)
-                        .Select(p => new
-                        {
-                            p.Id,
-                            p.Content,
-                            p.CreatedAt,
-                            Author = p.Author!.UserName
-                        })
-                        .ToListAsync();
+            var posts = await _postsService.GetPostsByUserAsync(username);
 
-            return Ok(posts);
+            var postsDto = posts
+                        .Select(p => new PostResponseDto
+                        {
+                            Id = p.Id,
+                            Content = p.Content,
+                            CreatedAt = p.CreatedAt,
+                            Author = p.Author!.UserName!
+                        })
+                        .ToList();
+
+
+            return Ok(postsDto);
         }
 
         [HttpGet("feed")]
         public async Task<IActionResult> PopulateFeedAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _authService.GetUserAsync(User);
 
             if (user == null)
             {
                 return Unauthorized(new { error = "User not logged in." });
             }
 
-            var friends = await _context
-                           .Friendships
-                           .Where(f => (f.UserId == user.Id || f.FriendId == user.Id) && f.IsConfirmed)
-                           .Select(f => f.UserId == user.Id ? f.FriendId : f.UserId)
-                           .ToListAsync();
+            var friends = await _friendshipsService.GetFriendsAsync(user);
+            var friendNames = friends.Select(f => f.UserId == user.Id ? f.FriendId : f.UserId);
 
-            var postsToDisplay = await _context
-                                .Posts
-                                .Where(p => friends.Contains(p.AuthorId) && p.AuthorId != user.Id)
-                                .OrderByDescending(p => p.CreatedAt)
-                                .Select(p => new PostResponseDto
-                                {
-                                    Id = p.Id,
-                                    Content = p.Content,
-                                    Author = p.Author!.UserName!,
-                                    CreatedAt = p.CreatedAt
-                                })
-                                .ToListAsync();
+            var postsToDisplay = await _postsService.GetFriendsPosts(user, friends);
 
             if (postsToDisplay.Any())
             {
-                return Ok(postsToDisplay);
+                var postsDto = postsToDisplay.Select(p => new PostResponseDto
+                {
+                    Id = p.Id,
+                    Content = p.Content,
+                    Author = p.Author!.UserName!,
+                    CreatedAt = p.CreatedAt
+                });
+
+                return Ok(postsDto);
             }
 
             var defaultPosts = new List<PostResponseDto>()
@@ -166,29 +157,27 @@ namespace MiniTwitter.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeletePostAsync([FromRoute] int id)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _authService.GetUserAsync(User);
 
             if (user == null)
             {
                 return Unauthorized(new { error = "User not logged in." });
             }
 
-            var post = await _context
-                            .Posts
-                            .FirstOrDefaultAsync(p => p.Id == id);
+            var post = await _postsService.GetPostAsync(id);
 
             if (post == null)
             {
                 return NotFound(new { error = "There is no such post." });
             }
 
-            if (post.Author!.Id != user.Id)
+            if (post.AuthorId != user.Id)
             {
                 return Forbid();
             }
 
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
+            _postsService.Remove(post);
+            await _postsService.SaveChangesAsync();
 
             return NoContent();
         }

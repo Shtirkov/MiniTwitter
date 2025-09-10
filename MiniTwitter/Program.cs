@@ -23,6 +23,7 @@ namespace MiniTwitter
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<TwitterContext>().AddDefaultTokenProviders();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IFriendshipsService, FriendshipsService>();
+            builder.Services.AddScoped<IPostsService, PostsService>();
 
             var app = builder.Build();
 

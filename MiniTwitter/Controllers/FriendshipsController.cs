@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MiniTwitter.Interfaces;
 using MiniTwitter.Models;
+using MiniTwitter.ResponseModels;
 
 namespace MiniTwitter.Controllers
 {
@@ -141,8 +142,13 @@ namespace MiniTwitter.Controllers
             }
 
             var friends = await _friendshipsService.GetFriendsAsync(user);
+            var friendsDto = friends.Select(f => new FriendResponseDto
+            {
+                UserName = f.UserId == user.Id ? f.Friend.UserName! : f.User.UserName!,
+                Email = f.UserId == user.Id ? f.Friend.Email! : f.User.Email!
+            });
 
-            return Ok(friends);
+            return Ok(friendsDto);
         }
     }
 }
