@@ -5,7 +5,7 @@ namespace MiniTwitter.RequestModels
     public class EditCommentRequestDto
     {
         [Required]
-        [MaxLength(280)]
+        [MaxLength(280, ErrorMessage = "Content must not be more 280 characters.")]
         public string Content { get; set; } = string.Empty;
     }
 }
