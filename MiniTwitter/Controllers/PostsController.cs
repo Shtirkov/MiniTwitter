@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MiniTwitter.Entities;
+using MiniTwitter.Helpers;
 using MiniTwitter.Interfaces;
 using MiniTwitter.Mappers;
 using MiniTwitter.ResponseModels;
@@ -51,7 +52,7 @@ namespace MiniTwitter.Controllers
         }
 
         [HttpGet("user/{username}")]
-        public async Task<IActionResult> GetPostsByUser(string username)
+        public async Task<IActionResult> GetPostsByUser(string username, [FromQuery] QueryParams queryParams)
         {
             var user = await _authService.GetUserAsync(User);
 
@@ -73,9 +74,10 @@ namespace MiniTwitter.Controllers
                 return Forbid();
             }
 
-            var posts = await _postsService.GetPostsByUserAsync(username);
+            var posts = await _postsService.GetPostsByUserAsync(username, queryParams);
 
-            var postsDto = posts          
+            var postsDto = posts
+                        .Items
                         .Select(p => new PostResponseDto
                         {
                             Id = p.Id,
@@ -87,11 +89,19 @@ namespace MiniTwitter.Controllers
                         .ToList();
 
 
-            return Ok(postsDto);
+            var result = new PagedResult<PostResponseDto>
+            {
+                Items = postsDto,
+                TotalCount = posts.TotalCount,
+                Page = posts.Page,
+                PageSize = posts.PageSize
+            };
+
+            return Ok(result);
         }
 
         [HttpGet("feed")]
-        public async Task<IActionResult> PopulateFeed()
+        public async Task<IActionResult> PopulateFeed([FromQuery] QueryParams queryParams)
         {
             var user = await _authService.GetUserAsync(User);
 
@@ -103,57 +113,48 @@ namespace MiniTwitter.Controllers
             var friends = await _friendshipsService.GetFriendsAsync(user);
             var friendNames = friends.Select(f => f.UserId == user.Id ? f.FriendId : f.UserId);
 
-            var postsToDisplay = await _postsService.GetFriendsPosts(user, friends);
+            var postsToDisplay = await _postsService.GetFriendsPosts(user, friends, queryParams);
 
-            if (postsToDisplay.Any())
+            if (postsToDisplay.Items.Count > 0)
             {
-                var postsDto = postsToDisplay.Select(p => new PostResponseDto
+                var postsDto = postsToDisplay.Items.Select(p => new PostResponseDto
                 {
                     Id = p.Id,
                     Content = p.Content,
                     Author = p.Author!.UserName!,
                     CreatedAt = p.CreatedAt,
                     Comments = p.Comments.Select(c => c.ToCommentDto()).ToList()
-                });
+                }).ToList();
 
-                return Ok(postsDto);
+                var result = new PagedResult<PostResponseDto>
+                {
+                    Items = postsDto,
+                    TotalCount = postsToDisplay.TotalCount,
+                    Page = postsToDisplay.Page,
+                    PageSize = postsToDisplay.PageSize
+                };
+
+                return Ok(result);
             }
 
-            var defaultPosts = new List<PostResponseDto>()
+            var defaultPosts = new List<PostResponseDto>
             {
-                new PostResponseDto
-                {
-                    Id = -1,
-                    Content = "Default post 1",
-                    Author = "System"
-                },
-                new PostResponseDto
-                {
-                    Id= -2,
-                    Content = "Default post 2",
-                    Author = "System"
-                },
-                new PostResponseDto
-                {
-                    Id= -3,
-                    Content = "Default post 3",
-                    Author = "System"
-                },
-                new PostResponseDto
-                {
-                    Id= -4,
-                    Content = "Default post 4",
-                    Author= "System"
-                },
-                new PostResponseDto
-                {
-                    Id= -5,
-                    Content = "Default post 5",
-                    Author = "System"
-                }
+                new PostResponseDto { Id = -1, Content = "Default post 1", Author = "System" },
+                new PostResponseDto { Id = -2, Content = "Default post 2", Author = "System" },
+                new PostResponseDto { Id = -3, Content = "Default post 3", Author = "System" },
+                new PostResponseDto { Id = -4, Content = "Default post 4", Author = "System" },
+                new PostResponseDto { Id = -5, Content = "Default post 5", Author = "System" }
             };
 
-            return Ok(defaultPosts);
+            var defaultResult = new PagedResult<PostResponseDto>
+            {
+                Items = defaultPosts,
+                TotalCount = defaultPosts.Count,
+                Page = 1,
+                PageSize = defaultPosts.Count
+            };
+
+            return Ok(defaultResult);
         }
 
         [HttpDelete]

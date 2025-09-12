@@ -1,4 +1,5 @@
 ﻿using MiniTwitter.Entities;
+using MiniTwitter.Helpers;
 using MiniTwitter.Models;
 
 namespace MiniTwitter.Interfaces
@@ -9,9 +10,9 @@ namespace MiniTwitter.Interfaces
 
         public Task SaveChangesAsync();
 
-        public Task<List<Post>> GetPostsByUserAsync(string username);
+        public Task<PagedResult<Post>> GetPostsByUserAsync(string username, QueryParams queryParams);
 
-        public Task<List<Post>> GetFriendsPosts(ApplicationUser user, List<Friendship> friends);
+        public Task<PagedResult<Post>> GetFriendsPosts(ApplicationUser user, List<Friendship> friends, QueryParams queryParams);
 
         public Task<Post?> GetPostAsync(int id);
 
