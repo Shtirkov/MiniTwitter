@@ -89,9 +89,7 @@ namespace MiniTwitter.Controllers
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            var user = HttpContext.User;
-
-            if (!_authService.IsSignedIn(user))
+            if (!_authService.IsSignedIn(User))
             {
                 return Unauthorized(new { message = "User not signed in" });
             }
