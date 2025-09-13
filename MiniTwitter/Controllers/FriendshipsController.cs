@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MiniTwitter.Interfaces;
 using MiniTwitter.Models;
 using MiniTwitter.ResponseModels;

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MiniTwitter.Interfaces;
+using MiniTwitter.Mappers;
 using MiniTwitter.Models;
 using MiniTwitter.ViewModels;
 
@@ -10,10 +12,12 @@ namespace MiniTwitter.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ITokenService _tokenService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, ITokenService tokenService)
         {
             _authService = authService;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -40,7 +44,8 @@ namespace MiniTwitter.Controllers
 
             if (result.Succeeded)
             {
-                return Ok(new { message = "User registered successfully" });
+                var token = _tokenService.CreateToken(user);
+                return Ok(user.ToRegisterDto(token));
             }
 
             foreach (var error in result.Errors)
@@ -75,10 +80,13 @@ namespace MiniTwitter.Controllers
 
             await _authService.SignInAsync(user, false);
 
-            return Ok(new { message = "Signed in!" });
+            var token = _tokenService.CreateToken(user);
+
+            return Ok(user.ToLoginDto(token));
         }
 
         [HttpPost("logout")]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             var user = HttpContext.User;
