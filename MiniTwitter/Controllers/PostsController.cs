@@ -3,6 +3,7 @@ using MiniTwitter.Entities;
 using MiniTwitter.Helpers;
 using MiniTwitter.Interfaces;
 using MiniTwitter.Mappers;
+using MiniTwitter.RequestModels;
 using MiniTwitter.ResponseModels;
 using MiniTwitter.ViewModels;
 
@@ -49,6 +50,48 @@ namespace MiniTwitter.Controllers
             await _postsService.SaveChangesAsync();
 
             return Ok(new { message = "Post created!", postId = post.Id });
+        }
+
+        [HttpPut("edit/{id}")]
+        public async Task<IActionResult> EditPost(int id, EditPostRequestDto postRequestDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _authService.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized(new { error = "User not logged in." });
+            }
+
+            var post = await _postsService.GetPostAsync(id);
+
+            if (post == null)
+            {
+                return NotFound(new { Error = "No such post." });
+            }
+
+            if (post.AuthorId != user.Id)
+            {
+                return Forbid();
+            }
+
+            _postsService.Edit(post, postRequestDto);
+            await _postsService.SaveChangesAsync();
+
+            var postDto = new PostResponseDto
+            {
+                Id = post.Id,
+                Author = user.UserName!,
+                Comments = post.Comments.Select(c => c.ToCommentDto()).ToList(),
+                Content = post.Content,
+                CreatedAt = post.CreatedAt
+            };
+
+            return Ok(postDto);
         }
 
         [HttpGet("user/{username}")]

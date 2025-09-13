@@ -86,7 +86,7 @@ namespace MiniTwitter.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{commentId}")]
+        [HttpPut("{commentId}")]
         public async Task<IActionResult> EditComment(int commentId, EditCommentRequestDto model)
         {
             if (!ModelState.IsValid)

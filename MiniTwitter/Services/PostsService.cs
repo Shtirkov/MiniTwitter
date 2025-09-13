@@ -3,7 +3,7 @@ using MiniTwitter.Entities;
 using MiniTwitter.Helpers;
 using MiniTwitter.Interfaces;
 using MiniTwitter.Models;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using MiniTwitter.RequestModels;
 
 namespace MiniTwitter.Services
 {
@@ -18,6 +18,12 @@ namespace MiniTwitter.Services
         public async Task AddAsync(Post post)
         {
             await _context.Posts.AddAsync(post);
+        }
+
+        public Post Edit(Post post, EditPostRequestDto postRequestDto)
+        {
+            post.Content = postRequestDto.Content;
+            return post;
         }
 
         public async Task<PagedResult<Post>> GetFriendsPosts(ApplicationUser user, List<Friendship> friends, QueryParams queryParams)
@@ -73,7 +79,7 @@ namespace MiniTwitter.Services
                 .Skip((queryParams.Page - 1) * queryParams.PageSize)
                 .Take(queryParams.PageSize)
                 .Include(p => p.Comments)
-                .ThenInclude (c => c.Author)
+                .ThenInclude(c => c.Author)
                 .ToListAsync();
 
             return new PagedResult<Post>

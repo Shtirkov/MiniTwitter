@@ -1,6 +1,7 @@
 ﻿using MiniTwitter.Entities;
 using MiniTwitter.Helpers;
 using MiniTwitter.Models;
+using MiniTwitter.RequestModels;
 
 namespace MiniTwitter.Interfaces
 {
@@ -15,6 +16,8 @@ namespace MiniTwitter.Interfaces
         public Task<PagedResult<Post>> GetFriendsPosts(ApplicationUser user, List<Friendship> friends, QueryParams queryParams);
 
         public Task<Post?> GetPostAsync(int id);
+
+        public Post Edit(Post post, EditPostRequestDto postRequestDto);
 
         public void Remove(Post post);
     }
