@@ -228,5 +228,43 @@ namespace MiniTwitter.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("like/{id}")]
+        public async Task<IActionResult> LikePost(int id)
+        {
+            var user = await _authService.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized(new { error = "User not logged in." });
+            }
+
+            var post = await _postsService.GetPostAsync(id);
+
+            if (post == null)
+            {
+                return NotFound(new { error = "There is no such post." });
+            }
+
+            if (!await _friendshipsService.CheckIfUsersAreFriendsAsync(user, post.Author))
+            {
+                return Forbid();
+            }
+
+            await _postsService.Like(post, user);
+            await _postsService.SaveChangesAsync();
+
+            var postDto = new PostResponseDto
+            {
+                Id = id,
+                Author = post.Author.UserName!,
+                Likes = post.TotalLikes,
+                CreatedAt = post.CreatedAt,
+                Comments = post.Comments.Select(c => c.ToCommentDto()).ToList(),
+                Content = post.Content,
+            };
+
+            return Ok(postDto);
+        }
     }
 }

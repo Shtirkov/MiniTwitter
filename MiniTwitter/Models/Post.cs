@@ -8,7 +8,6 @@ namespace MiniTwitter.Entities
 
         public string AuthorId { get; set; } = string.Empty;
 
-
         public required ApplicationUser Author { get; set; }
 
         public string Content { get; set; } = string.Empty;
@@ -16,5 +15,9 @@ namespace MiniTwitter.Entities
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+        public ICollection<Like> Likes { get; set; } = new List<Like>();
+
+        public int TotalLikes => Likes.Count;
     }
 }

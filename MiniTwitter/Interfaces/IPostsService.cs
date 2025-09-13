@@ -20,5 +20,7 @@ namespace MiniTwitter.Interfaces
         public Post Edit(Post post, EditPostRequestDto postRequestDto);
 
         public void Remove(Post post);
+
+        public Task Like(Post post, ApplicationUser user);
     }
 }

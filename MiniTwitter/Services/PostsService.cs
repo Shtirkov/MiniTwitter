@@ -60,6 +60,7 @@ namespace MiniTwitter.Services
                 .Posts
                 .Include(p => p.Comments)
                 .ThenInclude(c => c.Author)
+                .Include(p => p.Likes)
                 .OrderByDescending(c => c.CreatedAt)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
@@ -69,6 +70,7 @@ namespace MiniTwitter.Services
             var query = _context.Posts
                 .Include(p => p.Comments)
                 .ThenInclude(c => c.Author)
+                .Include(p => p.Likes)
                 .Where(p => p.Author!.UserName == username)
                 .AsQueryable();
 
@@ -80,6 +82,7 @@ namespace MiniTwitter.Services
                 .Take(queryParams.PageSize)
                 .Include(p => p.Comments)
                 .ThenInclude(c => c.Author)
+                .Include(p => p.Likes)
                 .ToListAsync();
 
             return new PagedResult<Post>
@@ -89,6 +92,28 @@ namespace MiniTwitter.Services
                 Page = queryParams.Page,
                 PageSize = queryParams.PageSize
             };
+        }
+
+        public async Task Like(Post post, ApplicationUser user)
+        {
+            var like = await _context.Likes.FirstOrDefaultAsync(l => l.UserId == user.Id && l.PostId == post.Id);
+
+            if(like == null)
+            {
+                var newLike = new Like
+                {
+                    PostId = post.Id,
+                    Post = post,
+                    UserId = user.Id,
+                    User = user
+                };
+
+                await _context.Likes.AddAsync(newLike);
+                return;
+            }
+
+            _context.Likes.Remove(like);
+            return;            
         }
 
         public void Remove(Post post)

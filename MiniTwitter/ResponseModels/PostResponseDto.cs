@@ -8,6 +8,8 @@
 
         public required string Author { get; set; } = string.Empty;
 
+        public int Likes { get; set; }
+
         public DateTime CreatedAt{ get; set; }
 
         public ICollection<CommentResponseDto> Comments { get; set; } = new List<CommentResponseDto>();
