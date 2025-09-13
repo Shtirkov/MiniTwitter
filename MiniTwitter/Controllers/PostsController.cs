@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MiniTwitter.Entities;
 using MiniTwitter.Helpers;
 using MiniTwitter.Interfaces;
@@ -11,6 +12,7 @@ namespace MiniTwitter.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PostsController : ControllerBase
     {
         private readonly IAuthService _authService;

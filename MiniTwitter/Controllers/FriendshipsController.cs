@@ -9,6 +9,7 @@ namespace MiniTwitter.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class FriendshipsController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -132,7 +133,7 @@ namespace MiniTwitter.Controllers
             return NoContent();
         }
 
-        [HttpGet("friends")]
+        [HttpGet("friends")]       
         public async Task<IActionResult> GetFriendsList()
         {
             var user = await _authService.GetUserAsync(User);

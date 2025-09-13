@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MiniTwitter.Interfaces;
 using MiniTwitter.Mappers;
 using MiniTwitter.Models;
@@ -8,6 +9,7 @@ namespace MiniTwitter.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CommentsController : ControllerBase
     {
         private readonly ICommentsService _commentsService;
