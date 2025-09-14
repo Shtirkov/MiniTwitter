@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MiniTwitter.Interfaces;
+using MiniTwitter.Middleware;
 using MiniTwitter.Models;
 using MiniTwitter.Services;
 using System.Security.Claims;
@@ -19,13 +21,13 @@ namespace MiniTwitter
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll",
-                    policy =>
-                    {
-                        policy.AllowAnyOrigin()
-                              .AllowAnyMethod()
-                              .AllowAnyHeader();
-                    });
+                options.AddPolicy("FrontendCors", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
             });
 
 
@@ -35,7 +37,17 @@ namespace MiniTwitter
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<TwitterContext>(options => options.UseSqlServer(connectionString));
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.User.RequireUniqueEmail = true).AddEntityFrameworkStores<TwitterContext>().AddDefaultTokenProviders();
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+            })
+                .AddEntityFrameworkStores<TwitterContext>()
+                .AddDefaultTokenProviders();
+
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -86,6 +98,26 @@ namespace MiniTwitter
 
             });
 
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errors = context.ModelState
+                        .Where(x => x.Value?.Errors.Count > 0)
+                        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+                        .ToArray();
+
+                    var response = new
+                    {
+                        status = 400,
+                        error = "ValidationError",
+                        details = errors
+                    };
+
+                    return new BadRequestObjectResult(response);
+                };
+            });
+
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IFriendshipsService, FriendshipsService>();
             builder.Services.AddScoped<IPostsService, PostsService>();
@@ -124,7 +156,7 @@ namespace MiniTwitter
             var app = builder.Build();
 
 
-            app.UseCors("AllowAll");
+            app.UseCors("FrontendCors");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -134,7 +166,7 @@ namespace MiniTwitter
             }
 
             //app.UseHttpsRedirection();
-
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
 

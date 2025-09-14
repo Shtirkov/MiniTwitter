@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MiniTwitter.Entities;
 using MiniTwitter.Models;
+using System.Reflection.Emit;
 
 namespace MiniTwitter
 {
@@ -50,16 +51,20 @@ namespace MiniTwitter
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Like>()
+                .HasIndex(l => new { l.PostId, l.UserId })
+                .IsUnique();
+
+            builder.Entity<Like>()
             .HasOne(l => l.Post)
             .WithMany(p => p.Likes)
             .HasForeignKey(l => l.PostId)
-            .OnDelete(DeleteBehavior.ClientCascade);
+            .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Like>()
                 .HasOne(l => l.User)
                 .WithMany()
                 .HasForeignKey(l => l.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
