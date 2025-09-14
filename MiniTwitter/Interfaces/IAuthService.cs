@@ -16,7 +16,7 @@ namespace MiniTwitter.Interfaces
 
         public bool IsSignedIn(ClaimsPrincipal principal);
 
-        public Task SignOutAsync();
+        public Task SignOutAsync(ApplicationUser user);
 
         public Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal principal);
 

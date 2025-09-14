@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using MiniTwitter.Interfaces;
 using MiniTwitter.Models;
 using MiniTwitter.Services;
+using System.Security.Claims;
 using System.Text;
 
 namespace MiniTwitter
@@ -34,7 +35,7 @@ namespace MiniTwitter
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<TwitterContext>(options => options.UseSqlServer(connectionString));
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<TwitterContext>().AddDefaultTokenProviders();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.User.RequireUniqueEmail = true).AddEntityFrameworkStores<TwitterContext>().AddDefaultTokenProviders();
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,6 +52,38 @@ namespace MiniTwitter
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Api:SigningKey"]!))
                 };
+                options.RequireHttpsMetadata = false;
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async context =>
+                    {
+                        var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+
+                        var userId = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                        if (string.IsNullOrEmpty(userId))
+                        {
+                            context.Fail("Missing user id.");
+                            return;
+                        }
+
+                        var user = await userManager.FindByIdAsync(userId);
+                        if (user is null)
+                        {
+                            context.Fail("User not found.");
+                            return;
+                        }
+
+                        var tokenStamp = context.Principal?.FindFirst("SecurityStamp")?.Value;
+                        var currentStamp = await userManager.GetSecurityStampAsync(user);
+
+                        if (string.IsNullOrEmpty(tokenStamp) || tokenStamp != currentStamp)
+                        {
+                            context.Fail("Token revoked.");
+                        }
+                    }
+                };
+
             });
 
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -100,7 +133,7 @@ namespace MiniTwitter
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();

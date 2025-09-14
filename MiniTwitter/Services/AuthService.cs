@@ -46,9 +46,9 @@ namespace MiniTwitter.Services
             await _signInManager.SignInAsync(user, false);
         }
 
-        public async Task SignOutAsync()
+        public async Task SignOutAsync(ApplicationUser user)
         {
-            await _signInManager.SignOutAsync();
+            await _userManager.UpdateSecurityStampAsync(user);
         }
 
         public async Task<ApplicationUser?> FindUserByUsernameAsync(string username)

@@ -44,7 +44,7 @@ namespace MiniTwitter.Controllers
 
             if (result.Succeeded)
             {
-                var token = _tokenService.CreateToken(user);
+                var token = await _tokenService.CreateToken(user);
                 return Ok(user.ToRegisterDto(token));
             }
 
@@ -80,7 +80,7 @@ namespace MiniTwitter.Controllers
 
             await _authService.SignInAsync(user, false);
 
-            var token = _tokenService.CreateToken(user);
+            var token = await _tokenService.CreateToken(user);
 
             return Ok(user.ToLoginDto(token));
         }
@@ -89,13 +89,15 @@ namespace MiniTwitter.Controllers
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            if (!_authService.IsSignedIn(User))
+            var user = await _authService.GetUserAsync(User);
+            if (user is null)
             {
-                return Unauthorized(new { message = "User not signed in" });
+                return Unauthorized(new { Error = "User not signed in" });
             }
 
-            await _authService.SignOutAsync();
-            return Ok(new { message = "Signed out!" });
+
+            await _authService.SignOutAsync(user);
+            return NoContent();
         }
     }
 }
