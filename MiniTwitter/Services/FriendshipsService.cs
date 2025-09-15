@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using MiniTwitter.Interfaces;
 using MiniTwitter.Models;
-using MiniTwitter.ResponseModels;
 
 namespace MiniTwitter.Services
 {
@@ -48,7 +47,7 @@ namespace MiniTwitter.Services
                 .Friendships
                 .Where(f => (f.UserId == user.Id || f.FriendId == user.Id) && f.IsConfirmed)
                 .Include(f => f.User)
-                .Include(f => f.Friend)                
+                .Include(f => f.Friend)
                 .ToListAsync();
         }
 
