@@ -8,7 +8,7 @@ namespace MiniTwitter.Entities
 
         public string AuthorId { get; set; } = string.Empty;
 
-        public required ApplicationUser Author { get; set; }
+        public ApplicationUser? Author { get; set; }
 
         public string Content { get; set; } = string.Empty;
 
