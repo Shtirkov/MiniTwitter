@@ -2,8 +2,9 @@
 {
     public class FriendResponseDto
     {
-        public string UserName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
+        public string UserUsername { get; set; } = string.Empty;
+        public string FriendUsername { get; set; } = string.Empty;
+        public bool IsConfirmed { get; set; }
     }
 
 }

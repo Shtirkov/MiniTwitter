@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MiniTwitter.Interfaces;
+using MiniTwitter.Mappers;
 using MiniTwitter.Models;
 using MiniTwitter.ResponseModels;
 
@@ -28,26 +29,21 @@ namespace MiniTwitter.Controllers
 
             if (friendToAdd == null)
             {
-                return NotFound(new { error = "Such user do not exist." });
+                return NotFound(new { Error = GlobalConstants.UserNotFoundErrorMessage });
             }
 
             var user = await _authService.GetUserAsync(User);
 
-            if (user == null)
+            if (friendToAdd.Id == user!.Id)
             {
-                return Unauthorized(new { error = "User not logged in." });
-            }
-
-            if (friendToAdd.Id == user.Id)
-            {
-                return BadRequest(new { error = "You cannot add yourself as a friend." });
+                return BadRequest(new { Error = GlobalConstants.AddYourselfAsFriendErrorMessage });
             }
 
             var alreadyRequested = await _friendshipsService.CheckIfFriendshipIsRequestedAsync(user, friendToAdd);
 
             if (alreadyRequested)
             {
-                return BadRequest(new { error = "Friend request already exists." });
+                return BadRequest(new { Error = GlobalConstants.FriendRequestAlreadySentErrorMessage });
             }
 
             var areFriends = await _friendshipsService.CheckIfUsersAreFriendsAsync(user, friendToAdd);
@@ -66,11 +62,10 @@ namespace MiniTwitter.Controllers
                 await _friendshipsService.AddAsync(friendship);
                 await _friendshipsService.SaveChangesAsync();
 
-                return Ok(new { friendToAdd.Id, friendToAdd.UserName });
+                return Ok(friendship.ToFriendshipDto());
             }
 
             return NoContent();
-
         }
 
         [HttpPut("accept/{username}")]
@@ -78,29 +73,24 @@ namespace MiniTwitter.Controllers
         {
             var user = await _authService.GetUserAsync(User);
 
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
-
             var friend = await _authService.FindUserByUsernameAsync(username);
 
             if (friend == null)
             {
-                return NotFound(new { error = "Such user does not exist" });
+                return NotFound(new { Error = GlobalConstants.UserNotFoundErrorMessage });
             }
 
-            var request = await _friendshipsService.CheckForPendingFriendRequest(user, friend);
+            var request = await _friendshipsService.CheckForPendingFriendRequest(user!, friend);
 
             if (request == null)
             {
-                return NotFound(new { message = "No pending request from this user." });
+                return NotFound(new { message = GlobalConstants.NoPendingFriendRequestsErrorMessage });
             }
 
             request.IsConfirmed = true;
 
             await _friendshipsService.SaveChangesAsync();
-            return Ok(new { message = "Friend request accepted." });
+            return Ok(request.ToFriendshipDto());
         }
 
         [HttpDelete("reject/{username}")]
@@ -108,23 +98,18 @@ namespace MiniTwitter.Controllers
         {
             var user = await _authService.GetUserAsync(User);
 
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
-
             var friend = await _authService.FindUserByUsernameAsync(username);
 
             if (friend == null)
             {
-                return NotFound(new { error = "Such user does not exist" });
+                return NotFound(new { Error = GlobalConstants.UserNotFoundErrorMessage });
             }
 
-            var request = await _friendshipsService.CheckForPendingFriendRequest(user, friend);
+            var request = await _friendshipsService.CheckForPendingFriendRequest(user!, friend);
 
             if (request == null)
             {
-                return NotFound(new { message = "No pending request from this user." });
+                return NotFound(new { Error = GlobalConstants.NoPendingFriendRequestsErrorMessage });
             }
 
             _friendshipsService.Remove(request);
@@ -138,17 +123,8 @@ namespace MiniTwitter.Controllers
         {
             var user = await _authService.GetUserAsync(User);
 
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
-
-            var friends = await _friendshipsService.GetFriendsAsync(user);
-            var friendsDto = friends.Select(f => new FriendResponseDto
-            {
-                UserName = f.UserId == user.Id ? f.Friend.UserName! : f.User.UserName!,
-                Email = f.UserId == user.Id ? f.Friend.Email! : f.User.Email!
-            });
+            var friends = await _friendshipsService.GetFriendsAsync(user!);
+            var friendsDto = friends.Select(f => f.ToFriendshipDto());            
 
             return Ok(friendsDto);
         }

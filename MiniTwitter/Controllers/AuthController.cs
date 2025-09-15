@@ -31,7 +31,7 @@ namespace MiniTwitter.Controllers
             var existing = await _authService.FindUserByEmailAsync(model.Email);
             if (existing != null)
             {
-                return BadRequest(new { message = "Email already in use." });
+                return BadRequest(new { Error = GlobalConstants.ExistingEmailErrorMessage });
             }
 
             var user = new ApplicationUser
@@ -66,23 +66,18 @@ namespace MiniTwitter.Controllers
 
             var user = await _authService.FindUserByEmailAsync(model.Email);
 
-            if (user == null)
-            {
-                return Unauthorized(new { message = "Invalid email or password." });
-            }
-
-            var passwordCheck = await _authService.CheckUserPasswordAsync(user, model.Password, true);
+            var passwordCheck = await _authService.CheckUserPasswordAsync(user!, model.Password, true);
 
             if (!passwordCheck.Succeeded)
             {
-                return Unauthorized(new { message = "Invalid email or password." });
+                return Unauthorized(new { Error = GlobalConstants.InvalidEmailOrPasswordErrorMessage });
             }
 
-            await _authService.SignInAsync(user, false);
+            await _authService.SignInAsync(user!, false);
 
-            var token = await _tokenService.CreateToken(user);
+            var token = await _tokenService.CreateToken(user!);
 
-            return Ok(user.ToLoginDto(token));
+            return Ok(user!.ToLoginDto(token));
         }
 
         [HttpPost("logout")]
@@ -90,13 +85,8 @@ namespace MiniTwitter.Controllers
         public async Task<IActionResult> Logout()
         {
             var user = await _authService.GetUserAsync(User);
-            if (user is null)
-            {
-                return Unauthorized(new { Error = "User not signed in" });
-            }
 
-
-            await _authService.SignOutAsync(user);
+            await _authService.SignOutAsync(user!);
             return NoContent();
         }
     }

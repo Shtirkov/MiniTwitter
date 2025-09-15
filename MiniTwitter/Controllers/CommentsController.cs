@@ -33,21 +33,16 @@ namespace MiniTwitter.Controllers
 
             var user = await _authService.GetUserAsync(User);
 
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
-
             var post = await _postsService.GetPostAsync(postId);
 
             if (post == null)
             {
-                return NotFound(new { error = "Post not found." });
+                return NotFound(new { Error = GlobalConstants.PostNotFoundErrorMessage });
             }
 
             var comment = new Comment
             {
-                AuthorId = user.Id,
+                AuthorId = user!.Id,
                 Author = user,
                 PostId = postId,
                 Post = post,
@@ -63,21 +58,16 @@ namespace MiniTwitter.Controllers
         [HttpDelete("{commentId}")]
         public async Task<IActionResult> DeleteComment(int commentId)
         {
-            var user = await _authService.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
+            var user = await _authService.GetUserAsync(User);            
 
             var comment = await _commentsService.GetAsync(commentId);
 
             if (comment == null)
             {
-                return NotFound("No such comment.");
+                return NotFound(new {Error = GlobalConstants.CommentNotFoundErrorMessage});
             }
 
-            if (comment.AuthorId != user.Id)
+            if (comment.AuthorId != user!.Id)
             {
                 return Forbid();
             }
@@ -97,20 +87,15 @@ namespace MiniTwitter.Controllers
             }
 
             var user = await _authService.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
-
+            
             var comment = await _commentsService.GetAsync(commentId);
 
             if (comment == null)
             {
-                return NotFound("No such comment.");
+                return NotFound(new { Error = GlobalConstants.CommentNotFoundErrorMessage });
             }
 
-            if (comment.AuthorId != user.Id)
+            if (comment.AuthorId != user!.Id)
             {
                 return Forbid();
             }

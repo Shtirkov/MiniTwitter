@@ -36,22 +36,16 @@ namespace MiniTwitter.Controllers
 
             var user = await _authService.GetUserAsync(User);
 
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
-
             var post = new Post
             {
-                Author = user,
+                Author = user!,
                 Content = model.Content,
-                CreatedAt = DateTime.UtcNow
             };
 
             await _postsService.AddAsync(post);
             await _postsService.SaveChangesAsync();
 
-            return Ok(new { message = "Post created!", postId = post.Id });
+            return Ok(post.ToPostDto());
         }
 
         [HttpPut("edit/{id}")]
@@ -64,19 +58,14 @@ namespace MiniTwitter.Controllers
 
             var user = await _authService.GetUserAsync(User);
 
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
-
             var post = await _postsService.GetPostAsync(id);
 
             if (post == null)
             {
-                return NotFound(new { Error = "No such post." });
+                return NotFound(new { Error = GlobalConstants.PostNotFoundErrorMessage });
             }
 
-            if (post.AuthorId != user.Id)
+            if (post.AuthorId != user!.Id)
             {
                 return Forbid();
             }
@@ -84,35 +73,21 @@ namespace MiniTwitter.Controllers
             _postsService.Edit(post, postRequestDto);
             await _postsService.SaveChangesAsync();
 
-            var postDto = new PostResponseDto
-            {
-                Id = post.Id,
-                Author = user.UserName!,
-                Comments = post.Comments.Select(c => c.ToCommentDto()).ToList(),
-                Content = post.Content,
-                CreatedAt = post.CreatedAt
-            };
-
-            return Ok(postDto);
+            return Ok(post.ToPostDto());
         }
 
         [HttpGet("user/{username}")]
         public async Task<IActionResult> GetPostsByUser(string username, [FromQuery] QueryParams queryParams)
         {
             var user = await _authService.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
-
+           
             var targetUser = await _authService.FindUserByUsernameAsync(username);
             if (targetUser == null)
             {
-                return NotFound(new { error = "User not found." });
+                return NotFound(new { Error = GlobalConstants.UserNotFoundErrorMessage });
             }
 
-            var isFriend = await _friendshipsService.CheckIfUsersAreFriendsAsync(user, targetUser);
+            var isFriend = await _friendshipsService.CheckIfUsersAreFriendsAsync(user!, targetUser);
 
             if (!isFriend && user != targetUser)
             {
@@ -123,14 +98,7 @@ namespace MiniTwitter.Controllers
 
             var postsDto = posts
                         .Items
-                        .Select(p => new PostResponseDto
-                        {
-                            Id = p.Id,
-                            Content = p.Content,
-                            CreatedAt = p.CreatedAt,
-                            Author = p.Author.UserName!,
-                            Comments = p.Comments.Select(c => c.ToCommentDto()).ToList()
-                        })
+                        .Select(p => p.ToPostDto())
                         .ToList();
 
 
@@ -150,26 +118,17 @@ namespace MiniTwitter.Controllers
         {
             var user = await _authService.GetUserAsync(User);
 
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
+            var friends = await _friendshipsService.GetFriendsAsync(user!);
+            var friendNames = friends.Select(f => f.UserId == user!.Id ? f.FriendId : f.UserId);
 
-            var friends = await _friendshipsService.GetFriendsAsync(user);
-            var friendNames = friends.Select(f => f.UserId == user.Id ? f.FriendId : f.UserId);
-
-            var postsToDisplay = await _postsService.GetFriendsPosts(user, friends, queryParams);
+            var postsToDisplay = await _postsService.GetFriendsPosts(user!, friends, queryParams);
 
             if (postsToDisplay.Items.Count > 0)
             {
-                var postsDto = postsToDisplay.Items.Select(p => new PostResponseDto
-                {
-                    Id = p.Id,
-                    Content = p.Content,
-                    Author = p.Author!.UserName!,
-                    CreatedAt = p.CreatedAt,
-                    Comments = p.Comments.Select(c => c.ToCommentDto()).ToList()
-                }).ToList();
+                var postsDto = postsToDisplay
+                    .Items
+                    .Select(p => p.ToPostDto())
+                    .ToList();
 
                 var result = new PagedResult<PostResponseDto>
                 {
@@ -208,19 +167,14 @@ namespace MiniTwitter.Controllers
         {
             var user = await _authService.GetUserAsync(User);
 
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
-
             var post = await _postsService.GetPostAsync(id);
 
             if (post == null)
             {
-                return NotFound(new { error = "There is no such post." });
+                return NotFound(new { Error = GlobalConstants.PostNotFoundErrorMessage });
             }
 
-            if (post.AuthorId != user.Id)
+            if (post.AuthorId != user!.Id)
             {
                 return Forbid();
             }
@@ -235,38 +189,23 @@ namespace MiniTwitter.Controllers
         public async Task<IActionResult> LikePost(int id)
         {
             var user = await _authService.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return Unauthorized(new { error = "User not logged in." });
-            }
-
+           
             var post = await _postsService.GetPostAsync(id);
 
             if (post == null)
             {
-                return NotFound(new { error = "There is no such post." });
+                return NotFound(new { Error = GlobalConstants.PostNotFoundErrorMessage });
             }
 
-            if (!await _friendshipsService.CheckIfUsersAreFriendsAsync(user, post.Author))
+            if (!await _friendshipsService.CheckIfUsersAreFriendsAsync(user!, post.Author))
             {
                 return Forbid();
             }
 
-            await _postsService.Like(post, user);
+            await _postsService.Like(post, user!);
             await _postsService.SaveChangesAsync();
 
-            var postDto = new PostResponseDto
-            {
-                Id = id,
-                Author = post.Author.UserName!,
-                Likes = post.TotalLikes,
-                CreatedAt = post.CreatedAt,
-                Comments = post.Comments.Select(c => c.ToCommentDto()).ToList(),
-                Content = post.Content,
-            };
-
-            return Ok(postDto);
+            return Ok(post.ToPostDto());
         }
     }
 }
