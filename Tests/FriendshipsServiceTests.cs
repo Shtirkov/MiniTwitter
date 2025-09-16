@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using MiniTwitter;
 using MiniTwitter.Models;
-using MiniTwitter.Services;
 
 namespace Tests
 {
@@ -18,7 +17,7 @@ namespace Tests
                 .Options;
 
             _context = new TwitterContext(options);
-            _service = new FriendshipsService(_context, null!);
+            _service = new FriendshipsService(_context);
 
             SeedData();
         }

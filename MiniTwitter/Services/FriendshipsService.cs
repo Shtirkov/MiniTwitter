@@ -1,64 +1,80 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using MiniTwitter;
 using MiniTwitter.Interfaces;
 using MiniTwitter.Models;
 
-namespace MiniTwitter.Services
+public class FriendshipsService : IFriendshipsService
 {
-    public class FriendshipsService : IFriendshipsService
+    private readonly TwitterContext _context;
+
+    public FriendshipsService(TwitterContext context)
     {
-        private readonly TwitterContext _context;
+        _context = context;
+    }
 
-        public FriendshipsService(TwitterContext context, UserManager<ApplicationUser> userManager)
+    private async Task<Friendship?> GetFriendshipAsync(string userId, string friendId)
+    {
+        return await _context.Friendships
+            .FirstOrDefaultAsync(f =>
+                (f.UserId == userId && f.FriendId == friendId) ||
+                (f.UserId == friendId && f.FriendId == userId));
+    }
+
+    private Task<List<Friendship>> GetFriendsQuery(string userId)
+    {
+        return _context.Friendships
+            .Where(f => (f.UserId == userId || f.FriendId == userId) && f.IsConfirmed)
+            .Include(f => f.User)
+            .Include(f => f.Friend)
+            .ToListAsync();
+    }
+
+    public async Task AddAsync(Friendship friendship)
+    {
+        await _context.Friendships.AddAsync(friendship);
+    }
+
+    public async Task<Friendship?> CheckForPendingFriendRequest(ApplicationUser user, ApplicationUser friend)
+    {
+        var friendship = await GetFriendshipAsync(user.Id, friend.Id);
+
+        if (friendship != null && !friendship.IsConfirmed)
         {
-            _context = context;
+            return friendship;
         }
 
-        public async Task AddAsync(Friendship friendship)
+        return null;
+    }
+
+    public async Task<bool> CheckIfFriendshipIsRequestedAsync(ApplicationUser user, ApplicationUser friend)
+    {
+        return await GetFriendshipAsync(user.Id, friend.Id) != null;
+    }
+
+    public async Task<bool> CheckIfUsersAreFriendsAsync(ApplicationUser user, ApplicationUser friend)
+    {
+        var friendship = await GetFriendshipAsync(user.Id, friend.Id);
+
+        if(friendship != null && friendship.IsConfirmed)
         {
-            await _context.Friendships.AddAsync(friendship);
+            return true;
         }
 
-        public async Task<Friendship?> CheckForPendingFriendRequest(ApplicationUser user, ApplicationUser friend)
-        {
-            return await _context
-                .Friendships
-                .FirstOrDefaultAsync(x => x.UserId == friend.Id && x.FriendId == user.Id && !x.IsConfirmed);
-        }
+        return false;
+    }
 
-        public async Task<bool> CheckIfFriendshipIsRequestedAsync(ApplicationUser user, ApplicationUser friend)
-        {
-            return await _context
-                .Friendships
-                .AnyAsync(f => (f.UserId == user.Id && f.FriendId == friend.Id) || (f.UserId == friend.Id && f.FriendId == user.Id));
-        }
+    public async Task<List<Friendship>> GetFriendsAsync(ApplicationUser user)
+    {
+        return await GetFriendsQuery(user.Id);
+    }
 
-        public async Task<bool> CheckIfUsersAreFriendsAsync(ApplicationUser user, ApplicationUser friend)
-        {
-            return await _context
-               .Friendships
-               .AnyAsync(f => f.UserId == user.Id && f.FriendId == friend.Id && f.IsConfirmed
-               || f.UserId == friend.Id && f.FriendId == user.Id && f.IsConfirmed);
-        }
+    public void Remove(Friendship friendship)
+    {
+        _context.Friendships.Remove(friendship);
+    }
 
-        public async Task<List<Friendship>> GetFriendsAsync(ApplicationUser user)
-        {
-            return await _context
-                .Friendships
-                .Where(f => (f.UserId == user.Id || f.FriendId == user.Id) && f.IsConfirmed)
-                .Include(f => f.User)
-                .Include(f => f.Friend)
-                .ToListAsync();
-        }
-
-        public void Remove(Friendship friendship)
-        {
-            _context.Friendships.Remove(friendship);
-        }
-
-        public async Task SaveChangesAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
     }
 }
