@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Moq;
 using MiniTwitter.Models;
 using MiniTwitter.Services;
+using Moq;
 using System.Security.Claims;
 
 namespace Tests

@@ -4,7 +4,6 @@ using MiniTwitter;
 using MiniTwitter.Entities;
 using MiniTwitter.Models;
 using MiniTwitter.RequestModels;
-using MiniTwitter.Services;
 
 namespace Tests
 {
