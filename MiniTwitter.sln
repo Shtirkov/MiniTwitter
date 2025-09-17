@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36408.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniTwitter", "MiniTwitter\MiniTwitter.csproj", "{00291385-A655-4094-BA6F-36E11412D4FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "MiniTwitter\Api.csproj", "{00291385-A655-4094-BA6F-36E11412D4FE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{36617F9A-F468-4AA0-80A0-CA26F91A8D3C}"
 EndProject

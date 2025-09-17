@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MiniTwitter\MiniTwitter.csproj" />
+    <ProjectReference Include="..\MiniTwitter\Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
