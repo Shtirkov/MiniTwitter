@@ -1,14 +1,50 @@
-import { Box, Button, Heading, Input, VStack, Text, Link } from "@chakra-ui/react";
+import { Box, Button, Heading, Input, VStack, Text, Link, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import loginBackground from '../assets/loginBackground.png'
+import { useNavigate } from "react-router-dom";
+
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const toast = useToast();
+    const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        console.log("Logging in with:", { email, password });
+
+        try {
+            const response = await fetch("http://localhost:5064/api/Auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Invalid credentials");
+            }
+
+            const data = await response.json();
+
+            localStorage.setItem("token", data.token);
+
+            toast({
+                title: "Login successful",
+                status: "success",
+                duration: 2000,
+                isClosable: true,
+            });
+
+            navigate("/feed");
+        } catch (err) {
+            toast({
+                title: "Login failed",
+                description: err.message,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        }
     };
 
     return (

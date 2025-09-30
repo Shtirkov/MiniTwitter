@@ -1,15 +1,48 @@
-import { Box, Button, Heading, Input, VStack, Text, Link } from "@chakra-ui/react";
+import { Box, Button, Heading, Input, VStack, Text, Link, useToast } from "@chakra-ui/react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Register() {
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const toast = useToast();
+    const navigate = useNavigate();
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        // TODO: извикай бекенда (AuthController -> register)
-        console.log("Registering with:", { email, username, password });
+
+        try {
+            const response = await fetch("http://localhost:5064/api/Auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, email, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message);
+            }
+
+            toast({
+                title: "Registration successful",
+                status: "success",
+                duration: 2000,
+                isClosable: true,
+            });
+
+            navigate("/login");
+        } catch (err) {
+            toast({
+                title: "Registration failed",
+                description: err.message,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        }
     };
 
     return (
@@ -82,7 +115,7 @@ export default function Register() {
                             _focus={{ bg: "gray.600" }}
                         />
                         <Button colorScheme="blue" width="full" type="submit" size="lg">
-                            Sign In
+                            Register
                         </Button>
                     </VStack>
                 </form>

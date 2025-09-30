@@ -11,14 +11,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* redirect към login */}
         <Route path="/" element={<Navigate to="/login" />} />
 
-        {/* публични */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* защитени */}
         <Route
           path="/feed"
           element={

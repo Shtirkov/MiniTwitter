@@ -20,8 +20,8 @@ export default function Feed() {
             bg="gray.900"
             color="white"
             minH="100vh"
-            w="100vw"       // 🔑 пълна ширина на екрана
-            pt="80px"       // за navbar
+            w="100vw"
+            pt="80px"
             px={6}
         >
             <Heading mb={6}>Feed</Heading>
