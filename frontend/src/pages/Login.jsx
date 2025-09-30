@@ -1,5 +1,6 @@
 import { Box, Button, Heading, Input, VStack, Text, Link } from "@chakra-ui/react";
 import { useState } from "react";
+import loginBackground from '../assets/loginBackground.png'
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -18,11 +19,10 @@ export default function Login() {
             display="flex"
             alignItems="center"
             justifyContent="center"
-            backgroundImage="url('https://images.pexels.com/photos/1015568/pexels-photo-1015568.jpeg')"
+            backgroundImage={loginBackground}
             backgroundSize="cover"
             backgroundPosition="center"
         >
-            {/* Overlay за по-тъмен ефект */}
             <Box
                 position="absolute"
                 top={0}

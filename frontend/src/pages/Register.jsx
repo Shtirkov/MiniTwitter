@@ -24,7 +24,6 @@ export default function Register() {
             backgroundSize="cover"
             backgroundPosition="center"
         >
-            {/* Overlay за по-тъмен ефект */}
             <Box
                 position="absolute"
                 top={0}
