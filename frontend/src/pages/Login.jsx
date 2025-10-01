@@ -20,18 +20,28 @@ export default function Login() {
                 body: JSON.stringify({ email, password }),
             });
 
-            if (!response.ok) {
-                throw new Error("Invalid credentials");
-            }
-
             const data = await response.json();
+
+            if (!response.ok) {
+                if (data.error) {
+                    if (data.details !== undefined) {
+                        throw new Error(data.details);
+                    }
+                    else throw new Error(data.error);
+                }
+                if (data.errors) {
+                    const messages = Object.values(data.errors).flat();
+                    throw new Error(messages.join("\n"));
+                }
+                throw new Error("Login failed");
+            }
 
             localStorage.setItem("token", data.token);
 
             toast({
                 title: "Login successful",
                 status: "success",
-                duration: 2000,
+                duration: 3000,
                 isClosable: true,
             });
 

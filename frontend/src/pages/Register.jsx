@@ -23,13 +23,23 @@ export default function Register() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message);
+                if (data.error) {
+                    if (data.details !== undefined) {
+                        throw new Error(data.details);
+                    }
+                    else throw new Error(data.error);
+                }
+                if (data.errors) {
+                    const messages = Object.values(data.errors).flat();
+                    throw new Error(messages.join("\n"));
+                }
+                throw new Error("Registration failed");
             }
 
             toast({
                 title: "Registration successful",
                 status: "success",
-                duration: 2000,
+                duration: 4000,
                 isClosable: true,
             });
 
@@ -39,7 +49,7 @@ export default function Register() {
                 title: "Registration failed",
                 description: err.message,
                 status: "error",
-                duration: 3000,
+                duration: 4000,
                 isClosable: true,
             });
         }

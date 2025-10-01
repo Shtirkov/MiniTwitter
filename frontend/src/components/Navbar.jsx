@@ -1,7 +1,25 @@
-import { Flex, Box, Button, Heading } from "@chakra-ui/react";
+import { Flex, Box, Button, Heading, useToast } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+
+    const navigate = useNavigate();
+    const toast = useToast();
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+
+        toast({
+            title: "Logged out",
+            status: "info",
+            duration: 3000,
+            isClosable: true,
+        });
+
+    }
+
     return (
         <Flex
             as="nav"
@@ -24,7 +42,7 @@ export default function Navbar() {
                 <Button as={Link} to="/profile" variant="ghost" color="white">
                     Profile
                 </Button>
-                <Button as={Link} to="/login" variant="ghost" color="red.300">
+                <Button onClick={handleLogout} variant="ghost" color="red.300">
                     Logout
                 </Button>
             </Box>
