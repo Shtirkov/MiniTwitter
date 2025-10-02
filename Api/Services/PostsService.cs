@@ -28,11 +28,12 @@ namespace MiniTwitter.Services
 
         public async Task<PagedResult<Post>> GetFriendsPosts(ApplicationUser user, List<Friendship> friends, QueryParams queryParams)
         {
-            var friendNames = friends.Select(f => f.UserId == user.Id ? f.FriendId : f.UserId);
+            var friendNames = friends.Select(f => f.UserId == user.Id ? f.FriendId : f.UserId).ToList();
+            friendNames.Add(user.Id);
 
             var query = _context
                 .Posts
-                .Where(p => friendNames.Contains(p.AuthorId) && p.AuthorId != user.Id)
+                .Where(p => friendNames.Contains(p.AuthorId))
                 .AsQueryable();
 
             var totalCount = await query.CountAsync();
@@ -58,6 +59,7 @@ namespace MiniTwitter.Services
         {
             return await _context
                 .Posts
+                .Include(p => p.Author)
                 .Include(p => p.Comments)
                 .ThenInclude(c => c.Author)
                 .Include(p => p.Likes)
