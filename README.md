@@ -1,74 +1,133 @@
-# MiniTwitter 🐦
+MiniTwitter 🐦
 
-An educational project inspired by Twitter.  
-The goal is to build **basic social media features** while practicing **ASP.NET Core Web API**, **Entity Framework Core**, and **SQL Server**.
+An educational project inspired by Twitter.
+The goal is to build basic social media features while practicing ASP.NET Core Web API, Entity Framework Core, SQL Server, and a React frontend.
 
----
+🚀 Features
+👤 Authentication
 
-## 🚀 Features
+User registration & login (JWT token-based)
 
-- 👤 **Authentication**
-  - User registration  
-  - Login with email and password  
-  - (Planned) – JWT token authentication  
+Protected routes on the frontend
 
-- 📝 **Posts**
-  - Create a new post  
-  - View posts from friends  
-  - Delete your own posts  
+Logout (clears token)
 
-- 🤝 **Friendships**
-  - Send friend requests  
-  - Accept / Reject requests  
-  - View a list of friends  
+📝 Posts
 
----
+Create / Read / Delete posts
 
-## 🛠️ Tech Stack
+Like / Unlike posts (real-time toggle)
 
-- [.NET 9](https://dotnet.microsoft.com/)  
-- [ASP.NET Core Web API](https://learn.microsoft.com/en-us/aspnet/core/?view=aspnetcore-8.0)  
-- [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/)  
-- [SQL Server](https://www.microsoft.com/en-us/sql-server/)  
-- (Planned) React for frontend  
+Comments under posts (add / delete if you are the author)
 
----
+Feed populated with your posts + friends’ posts
 
-## ⚡ Getting Started
+🤝 Friendships
 
-1. **Clone the repository**
-  ```bash
-  git clone https://github.com/Shtirkov/MiniTwitter.git
-  cd MiniTwitter
-  ```
-2. **Configure the database**
-  - Make sure you have SQL Server running locally
-  - Update ConnectionStrings:DefaultConnection in appsettings.json
+Send friend requests
 
-3. **Apply migrations and update the database**
-  ```bash
-  dotnet ef database update
-  ```
-4. **Run the project**
-  ```bash
-  dotnet run
-  ```
----
+Accept / Reject requests
 
-## 🎯 Roadmap:
-  - ✅ Basic backend with ASP.NET Core
-  - ✅ User authentication and posts CRUD
-  - ✅ Friendships (requests, accept/reject)
-  - ⏳ JWT Authentication
-  - ⏳ Comments and reactions
-  - ⏳ React frontend
-    
----
+View a list of friends
+
+Pending requests panel with actions
+
+👤 Profile
+
+View your own posts
+
+Manage friends list
+
+See and manage pending requests
+
+Delete your own posts
+
+🛠️ Tech Stack
+
+Backend
+
+.NET 9
+
+ASP.NET Core Web API
+
+Entity Framework Core
+
+SQL Server
+
+Frontend
+
+React
+ + Vite
+
+Chakra UI
+
+React Router
+
+⚡ Getting Started
+Backend
+
+Clone the repository
+
+git clone https://github.com/Shtirkov/MiniTwitter.git
+cd MiniTwitter
+
+
+Configure the database
+
+Ensure you have SQL Server running locally
+
+Update ConnectionStrings:DefaultConnection in appsettings.json
+
+Apply migrations
+
+dotnet ef database update
+
+
+Run the backend
+
+dotnet run --project MiniTwitter
+
+
+The API will be available at: https://localhost:5064/api
+
+Frontend
+
+Navigate to the frontend folder
+
+cd frontend
+
+
+Install dependencies
+
+npm install
+
+
+Run the frontend
+
+npm run dev
+
+
+The app will be available at: http://localhost:5173
+
+🎯 Roadmap
+
+✅ JWT Authentication
+
+✅ Posts with likes & comments
+
+✅ Friendships (send, accept/reject, list)
+
+✅ React frontend with protected routes
+
+⏳ Edit posts & comments
+
+⏳ Profile customization (avatar, bio)
+
+⏳ Deployment to cloud (Docker + Azure / Render / Vercel)
 
 📖 Note
-
-- This project is for educational purposes only and is not production-ready.
-- It is being developed to practice back-end and later front-end skills.
+This project is for educational purposes only and is not production-ready.
+It is being developed step by step to practice full-stack development skills.
 
 👨‍💻 Author
-- Developed by @Shtirkov
+Developed by @Shtirkov
