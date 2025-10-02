@@ -51,39 +51,42 @@ The goal is to build **basic social media features** while practicing **ASP.NET 
 
 ### Backend
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Shtirkov/MiniTwitter.git
-   cd MiniTwitter
-  
+```bash
+git clone https://github.com/Shtirkov/MiniTwitter.git
+cd MiniTwitter
+```
+
 2. **Configure the database**
 Ensure you have SQL Server running locally
 Update ConnectionStrings:DefaultConnection in appsettings.json
 
 3.**Apply migrations**
-  ```bash
-  dotnet ef database update
-  ```
+```bash
+dotnet ef database update
+```
 4. **Run the backend**
-  ```bash
-  dotnet run --project MiniTwitter
-  ```
+```bash
+dotnet run --project MiniTwitter
+```
 
 The API will be available at: https://localhost:5064/api
 
 ###Frontend
 
 1. **Navigate to the frontend folder**
-  ```bash
-  cd frontend
-  ```
+```bash
+cd frontend
+```
+
 2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
+
 3. **Run the frontend**
-   ```bash
-   npm run dev
-   ```
+```bash
+npm run dev
+ ```
 
 The app will be available at: http://localhost:5173
 
