@@ -55,7 +55,7 @@ public class FriendshipsService : IFriendshipsService
     {
         var friendship = await GetFriendshipAsync(user.Id, friend.Id);
 
-        if(friendship != null && friendship.IsConfirmed)
+        if (friendship != null && friendship.IsConfirmed)
         {
             return true;
         }
@@ -76,5 +76,10 @@ public class FriendshipsService : IFriendshipsService
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Friendship>> GetPendingFriendshipRequests(ApplicationUser user)
+    {
+      return await _context.Friendships.Where(f => f.FriendId == user.Id && f.IsConfirmed == false).ToListAsync();
     }
 }

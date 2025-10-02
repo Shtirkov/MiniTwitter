@@ -1,5 +1,4 @@
 ﻿using MiniTwitter.Models;
-using MiniTwitter.ResponseModels;
 
 namespace MiniTwitter.Interfaces
 {
@@ -18,5 +17,6 @@ namespace MiniTwitter.Interfaces
         public void Remove(Friendship friendship);
 
         public Task<List<Friendship>> GetFriendsAsync(ApplicationUser user);
+        public Task<List<Friendship>> GetPendingFriendshipRequests(ApplicationUser user);
     }
 }

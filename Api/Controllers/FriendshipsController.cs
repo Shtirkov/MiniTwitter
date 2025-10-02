@@ -128,5 +128,17 @@ namespace MiniTwitter.Controllers
 
             return Ok(friendsDto);
         }
+
+        [HttpGet("pendingRequests")]
+        public async Task<IActionResult> GetPendingFriendshipRequests()
+        {
+            var user = await _authService.GetUserAsync(User);
+            var pendingFriendshipRequests = await _friendshipsService.GetPendingFriendshipRequests(user);
+
+            var dto = pendingFriendshipRequests.Select(f => f.ToFriendshipDto());
+
+            return Ok(dto);
+        }
+
     }
 }

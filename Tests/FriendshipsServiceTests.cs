@@ -201,6 +201,20 @@ namespace Tests
                 .Should().BeTrue();
         }
 
+        [Fact]
+        public async Task GetPendingFriendshipRequestsShouldReturnNotConfirmedFriendshipRequests()
+        {
+            //Arrange
+
+            //Act
+            var user = await _context.Users.FindAsync("u1");
+            var pendingRequests = await _service.GetPendingFriendshipRequests(user!);
+
+            //Assert
+            pendingRequests.Should().NotBeNull();
+            pendingRequests.Count().Should().Be(1);
+        }
+
         private void SeedData()
         {
             var u1 = new ApplicationUser { Id = "u1", UserName = "User1" };
@@ -211,7 +225,8 @@ namespace Tests
 
             _context.Friendships.AddRange(
                 new Friendship { UserId = "u1", FriendId = "u2", IsConfirmed = true },
-                new Friendship { UserId = "u2", FriendId = "u3", IsConfirmed = false } // pending
+                new Friendship { UserId = "u2", FriendId = "u3", IsConfirmed = false }, // pending
+                new Friendship { UserId = "u3", FriendId = "u1", IsConfirmed = false } // pending
             );
 
             _context.SaveChanges();
