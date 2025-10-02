@@ -92,10 +92,10 @@ The app will be available at: http://localhost:5173
 
 🎯 Roadmap
 
-✅ JWT Authentication
-✅ Posts with likes & comments
-✅ Friendships (send, accept/reject, list)
-✅ React frontend with protected routes
+- ✅ JWT Authentication
+- ✅ Posts with likes & comments
+- ✅ Friendships (send, accept/reject, list)
+- ✅ React frontend with protected routes
 
 📖 Note
 This project is for educational purposes only and is not production-ready.
