@@ -36,6 +36,7 @@ export default function Login() {
                 throw new Error("Login failed");
             }
 
+            localStorage.setItem("username", data.username);
             localStorage.setItem("token", data.token);
 
             toast({
