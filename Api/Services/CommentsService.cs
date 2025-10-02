@@ -14,7 +14,7 @@ public class CommentsService : ICommentsService
     }
     private IQueryable<Comment> CommentsQuery()
     {
-        return _context.Comments.AsNoTracking().Include(c => c.Author);
+        return _context.Comments.AsNoTracking();
     }
 
     private Task<Comment?> GetCommentByIdAsync(int id)
