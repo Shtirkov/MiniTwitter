@@ -23,7 +23,7 @@ namespace MiniTwitter
             {
                 options.AddPolicy("FrontendCors", policy =>
                 {
-                    policy.WithOrigins("http://localhost:5176")
+                    policy.WithOrigins("http://localhost:5173")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();

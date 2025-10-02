@@ -197,7 +197,7 @@ namespace MiniTwitter.Controllers
                 return NotFound(new { Error = GlobalConstants.PostNotFoundErrorMessage });
             }
 
-            if (!await _friendshipsService.CheckIfUsersAreFriendsAsync(user!, post.Author))
+            if (post.AuthorId != user.Id && !await _friendshipsService.CheckIfUsersAreFriendsAsync(user!, post.Author))
             {
                 return Forbid();
             }
