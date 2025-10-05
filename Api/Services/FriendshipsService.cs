@@ -80,6 +80,6 @@ public class FriendshipsService : IFriendshipsService
 
     public async Task<List<Friendship>> GetPendingFriendshipRequests(ApplicationUser user)
     {
-      return await _context.Friendships.Where(f => f.FriendId == user.Id && f.IsConfirmed == false).ToListAsync();
+      return await _context.Friendships.Where(f => f.FriendId == user.Id && f.IsConfirmed == false).Include(f => f.User).ToListAsync();
     }
 }
