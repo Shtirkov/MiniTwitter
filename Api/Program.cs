@@ -155,6 +155,16 @@ namespace MiniTwitter
 
             var app = builder.Build();
 
+            if (args.Contains("--apply-migrations"))
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<TwitterContext>();
+                    db.Database.Migrate();
+                    Console.WriteLine("Database migrations applied successfully.");
+                }
+            }
+
 
             app.UseCors("FrontendCors");
 
