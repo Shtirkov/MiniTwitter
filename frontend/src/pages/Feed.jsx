@@ -9,8 +9,9 @@ import {
     Input,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
+import { API_BASE as API } from "../api";
 
-const API = "http://localhost:5064/api";
+//const API = "http://localhost:5064/api";
 
 export default function Feed() {
     const [posts, setPosts] = useState([]);

@@ -10,8 +10,10 @@ import {
     useToast
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { API_BASE as API } from "../api";
 
-const API = "http://localhost:5064/api";
+
+//const API = "http://localhost:5064/api";
 
 export default function Profile() {
     const [posts, setPosts] = useState([]);
