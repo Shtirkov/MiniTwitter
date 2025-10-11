@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   mssql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2025-latest
     container_name: minitwitter-mssql
     environment:
       SA_PASSWORD: ${SA_PASSWORD}
