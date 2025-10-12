@@ -20,7 +20,6 @@ export default function Feed() {
     const currentUser = localStorage.getItem("username");
     const token = localStorage.getItem("token");
 
-    // зареждане на фийда
     useEffect(() => {
         const fetchFeed = async () => {
             try {
@@ -37,7 +36,6 @@ export default function Feed() {
         fetchFeed();
     }, [token]);
 
-    // създаване на пост
     const handlePost = async () => {
         if (!newPost.trim()) return;
         try {
@@ -58,7 +56,6 @@ export default function Feed() {
         }
     };
 
-    // like/unlike
     const handleLike = async (postId) => {
         try {
             const res = await fetch(`${API}/posts/like/${postId}`, {
@@ -73,7 +70,6 @@ export default function Feed() {
         }
     };
 
-    // delete пост
     const handleDeletePost = async (postId) => {
         try {
             const res = await fetch(`${API}/posts/${postId}`, {
@@ -87,7 +83,6 @@ export default function Feed() {
         }
     };
 
-    // добавяне на коментар
     const handleAddComment = async (postId) => {
         const content = (newCommentByPost[postId] || "").trim();
         if (!content) return;
@@ -113,7 +108,6 @@ export default function Feed() {
         }
     };
 
-    // триене на коментар
     const handleDeleteComment = async (postId, commentId) => {
         try {
             const res = await fetch(`${API}/comments/${commentId}`, {
@@ -155,7 +149,7 @@ export default function Feed() {
                 </Button>
             </VStack>
 
-            {/* постове */}
+            { }
             <VStack spacing={6} align="stretch">
                 {posts.map((post) => (
                     <Box key={post.id} bg="gray.800" p={4} rounded="md" shadow="md">
@@ -173,7 +167,7 @@ export default function Feed() {
                             </Text>
                         </HStack>
 
-                        {/* бутони */}
+                        { }
                         <HStack spacing={3} mb={3}>
                             <Button size="sm" onClick={() => handleLike(post.id)}>
                                 {post.likedByCurrentUser ? "💔 Unlike" : "❤️ Like"}
@@ -189,7 +183,7 @@ export default function Feed() {
                             )}
                         </HStack>
 
-                        {/* коментари */}
+                        { }
                         <VStack align="stretch" spacing={2} mt={3}>
                             <HStack>
                                 <Input

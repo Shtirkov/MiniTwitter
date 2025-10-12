@@ -25,7 +25,6 @@ export default function Profile() {
     const currentUser = localStorage.getItem("username");
     const toast = useToast();
 
-    // зареждане на постовете
     useEffect(() => {
         const fetchPosts = async () => {
             try {
@@ -42,7 +41,6 @@ export default function Profile() {
         fetchPosts();
     }, [token, currentUser]);
 
-    // зареждане на приятели
     useEffect(() => {
         const fetchFriends = async () => {
             try {
@@ -59,7 +57,6 @@ export default function Profile() {
         fetchFriends();
     }, [token]);
 
-    // зареждане на pending friend requests
     useEffect(() => {
         const fetchRequests = async () => {
             try {
@@ -103,7 +100,6 @@ export default function Profile() {
         }
     };
 
-    // accept friend request
     const handleAccept = async (username) => {
         try {
             const res = await fetch(`${API}/friendships/accept/${username}`, {
@@ -133,7 +129,6 @@ export default function Profile() {
         }
     };
 
-    // reject friend request
     const handleReject = async (username) => {
         try {
             const res = await fetch(`${API}/friendships/reject/${username}`, {
@@ -161,7 +156,6 @@ export default function Profile() {
         }
     };
 
-    // delete пост
     const handleDeletePost = async (id) => {
         try {
             const res = await fetch(`${API}/posts/${id}`, {
@@ -185,7 +179,7 @@ export default function Profile() {
             px={6}
             gap={6}
         >
-            {/* Ляв панел - приятели + добавяне */}
+            { }
             <Box w="20%" bg="gray.800" p={4} rounded="md" shadow="md" h="fit-content">
                 <Heading size="md" mb={4}>
                     Friends
@@ -217,7 +211,7 @@ export default function Profile() {
                 </VStack>
             </Box>
 
-            {/* Център - постове */}
+            { }
             <Box flex="1" bg="gray.800" p={4} rounded="md" shadow="md">
                 <Heading size="md" mb={4}>
                     My Posts
@@ -249,7 +243,7 @@ export default function Profile() {
                 </VStack>
             </Box>
 
-            {/* Десен панел - friend requests */}
+            { }
             <Box w="20%" bg="gray.800" p={4} rounded="md" shadow="md" h="fit-content">
                 <Heading size="md" mb={4}>
                     Friend Requests
