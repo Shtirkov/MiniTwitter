@@ -2,8 +2,9 @@ import { Box, Button, Heading, Input, VStack, Text, Link, useToast } from "@chak
 import { useState } from "react";
 import loginBackground from '../assets/loginBackground.png'
 import { useNavigate } from "react-router-dom";
-import { API_BASE } from "../api";
+//import { API_BASE } from "../api";
 
+const API = import.meta.env.VITE_API_URL;
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const response = await fetch(`${API_BASE}/Auth/login`, {
+            const response = await fetch(`${API}/Auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),

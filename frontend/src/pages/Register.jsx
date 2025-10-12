@@ -1,8 +1,9 @@
 import { Box, Button, Heading, Input, VStack, Text, Link, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_BASE } from "../api";
+//import { API_BASE } from "../api";
 
+const API = import.meta.env.VITE_API_URL;
 
 export default function Register() {
     const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ export default function Register() {
         e.preventDefault();
 
         try {
-            const response = await fetch(`${API_BASE}/Auth/register`, {
+            const response = await fetch(`${API}/Auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, email, password }),

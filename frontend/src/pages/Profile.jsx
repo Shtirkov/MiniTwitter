@@ -10,10 +10,11 @@ import {
     useToast
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { API_BASE as API } from "../api";
+//import { API_BASE as API } from "../api";
 
 
-//const API = "http://localhost:5064/api";
+const API = import.meta.env.VITE_API_URL;
+
 
 export default function Profile() {
     const [posts, setPosts] = useState([]);
