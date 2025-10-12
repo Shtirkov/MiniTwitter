@@ -8,55 +8,44 @@ services:
     container_name: minitwitter-api
     environment:
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: "Server=mssql,1433;Database=MiniTwitterDb;User Id=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=minitwitterdb;Username=minitwitteruser;Password=${POSTGRES_PASSWORD};SSL Mode=Disable"
     depends_on:
-      - mssql
+      - postgres
     ports:
       - "8080:8080"
     restart: unless-stopped
 
-  mssql:
-    image: mcr.microsoft.com/mssql/server:2025-latest
-    container_name: minitwitter-mssql
+  postgres:
+    image: postgres:17-alpine
+    container_name: minitwitter-postgres
     environment:
-      SA_PASSWORD: ${SA_PASSWORD}
-      ACCEPT_EULA: "Y"
-      MSSQL_PID: "Developer"
+      POSTGRES_USER: minitwitteruser
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: minitwitterdb
     ports:
-      - "1433:1433"
+      - "5432:5432"
     volumes:
-      - mssql-data:/var/opt/mssql
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "${SA_PASSWORD}" -C -Q "SELECT 1" || exit 1
+      test: [ "CMD-SHELL", "pg_isready -U minitwitteruser -d minitwitterdb" ]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 20s
+      start_period: 10s
     restart: unless-stopped
 
-  sqlpad:
-    image: sqlpad/sqlpad:latest
-    container_name: minitwitter-sqlpad
-    ports:
-      - "3000:3000"
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: minitwitter-pgadmin
     environment:
-      - SQLPAD_ADMIN=admin@example.com
-      - SQLPAD_ADMIN_PASSWORD=admin
-      - SQLPAD_APP_LOG_LEVEL=debug
-
-      # Connection settings
-      - SQLPAD_CONNECTIONS__minitwitter__name=MiniTwitter
-      - SQLPAD_CONNECTIONS__minitwitter__driver=sqlserver
-      - SQLPAD_CONNECTIONS__minitwitter__host=minitwitter-mssql
-      - SQLPAD_CONNECTIONS__minitwitter__port=1433
-      - SQLPAD_CONNECTIONS__minitwitter__database=MiniTwitterDb
-      - SQLPAD_CONNECTIONS__minitwitter__username=sa
-      - SQLPAD_CONNECTIONS__minitwitter__password=${SA_PASSWORD}
-      - SQLPAD_CONNECTIONS__minitwitter__trustServerCertificate=true
-
+      PGADMIN_DEFAULT_EMAIL: ${PG_ADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PG_ADMIN_PASSWORD}
+    ports:
+      - "5050:80"
     depends_on:
-      mssql:
-        condition: service_healthy
+      - postgres
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
     restart: unless-stopped
 
   frontend:
@@ -71,4 +60,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  mssql-data:
+  postgres-data:
+  pgadmin-data:

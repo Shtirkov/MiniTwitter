@@ -37,7 +37,7 @@ namespace MiniTwitter.Services
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddMinutes(60),
+                Expires = DateTime.UtcNow.AddMinutes(60),
                 SigningCredentials = creds,
                 Issuer = _config["Api:Issuer"],
                 Audience = _config["Api:Audience"]

@@ -19,7 +19,7 @@ public class CommentsService : ICommentsService
 
     private Task<Comment?> GetCommentByIdAsync(int id)
     {
-       return CommentsQuery().FirstOrDefaultAsync(c => c.Id == id);
+       return CommentsQuery().Include(c => c.Author).FirstOrDefaultAsync(c => c.Id == id);
     }
 
     public async Task AddAsync(Comment comment)

@@ -24,9 +24,9 @@ namespace MiniTwitter
                 options.AddPolicy("FrontendCors", policy =>
                 {
                     policy.WithOrigins(
-                                        "http://localhost",        
-                                        "http://127.0.0.1",       
-                                        "http://localhost:5173"    
+                                        "http://localhost",
+                                        "http://127.0.0.1",
+                                        "http://localhost:5173"
                                       )
                           .AllowAnyHeader()
                           .AllowAnyMethod()
@@ -40,7 +40,7 @@ namespace MiniTwitter
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            builder.Services.AddDbContext<TwitterContext>(options => options.UseSqlServer(connectionString));
+            builder.Services.AddDbContext<TwitterContext>(options => options.UseNpgsql(connectionString));
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -159,16 +159,12 @@ namespace MiniTwitter
 
             var app = builder.Build();
 
-            if (args.Contains("--apply-migrations"))
+            using (var scope = app.Services.CreateScope())
             {
-                using (var scope = app.Services.CreateScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<TwitterContext>();
-                    db.Database.Migrate();
-                    Console.WriteLine("Database migrations applied successfully.");
-                }
+                var db = scope.ServiceProvider.GetRequiredService<TwitterContext>();
+                db.Database.Migrate();
+                Console.WriteLine("Database migrations applied successfully.");
             }
-
 
             app.UseCors("FrontendCors");
 

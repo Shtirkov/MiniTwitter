@@ -87,10 +87,10 @@ namespace Tests
         {
             // Arrange
             var u1 = await _context.Users.FindAsync("u1");
-            var u3 = await _context.Users.FindAsync("u3");
+            var u4 = await _context.Users.FindAsync("u4");
 
             // Act
-            var result = await _service.CheckIfFriendshipIsRequestedAsync(u1!, u3!);
+            var result = await _service.CheckIfFriendshipIsRequestedAsync(u1!, u4!);
 
             // Assert
             result.Should().BeFalse();
@@ -220,8 +220,9 @@ namespace Tests
             var u1 = new ApplicationUser { Id = "u1", UserName = "User1" };
             var u2 = new ApplicationUser { Id = "u2", UserName = "User2" };
             var u3 = new ApplicationUser { Id = "u3", UserName = "User3" };
+            var u4 = new ApplicationUser { Id = "u4", UserName = "User4" };
 
-            _context.Users.AddRange(u1, u2, u3);
+            _context.Users.AddRange(u1, u2, u3, u4);
 
             _context.Friendships.AddRange(
                 new Friendship { UserId = "u1", FriendId = "u2", IsConfirmed = true },

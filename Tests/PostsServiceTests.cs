@@ -35,7 +35,7 @@ namespace Tests
                 Id = 0,
                 AuthorId = "-5",
                 Content = "test",
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             //Act
@@ -100,11 +100,11 @@ namespace Tests
         public async Task GetFriendsPostsShouldReturnOnlyFriendsPosts()
         {
             //Arrange
-            var user = await _context.Users.FindAsync("u1");
+            var user = await _context.Users.FindAsync("u4");
 
             var friends = new List<Friendship>
             {
-                new Friendship { UserId = "u1", FriendId = "u2" }
+                new Friendship { UserId = "u4", FriendId = "u2" }
             };
 
             var queryParams = new QueryParams { Page = 1, PageSize = 10 };
@@ -149,12 +149,12 @@ namespace Tests
         public async Task GetFriendsPostsShouldPageTheResults()
         {
             //Arrange
-            var user = await _context.Users.FindAsync("u1");
+            var user = await _context.Users.FindAsync("u4");
 
             var friends = new List<Friendship>
             {
-                new Friendship { UserId = "u1", FriendId = "u2" },
-                new Friendship { UserId = "u1", FriendId = "u3" }
+                new Friendship { UserId = "u4", FriendId = "u2" },
+                new Friendship { UserId = "u4", FriendId = "u3" }
             };
 
             var queryParams = new QueryParams { Page = 2, PageSize = 1 };
@@ -214,7 +214,7 @@ namespace Tests
         public async Task GetFriendsPostsShouldReturnEmptyWhenUserHasNoFriends()
         {
             // Arrange
-            var user = await _context.Users.FindAsync("u1");
+            var user = await _context.Users.FindAsync("u4");
             var friends = new List<Friendship>();
             var queryParams = new QueryParams { Page = 1, PageSize = 10 };
 
@@ -230,7 +230,7 @@ namespace Tests
         public async Task GetFriendsPostsShouldReturnEmptyWhenFriendsHaveNoPosts()
         {
             // Arrange
-            var user = await _context.Users.FindAsync("u1");
+            var user = await _context.Users.FindAsync("u4");
 
             var friend = await _context.Users.FindAsync("u3");
             var postsByFriend = _context.Posts.Where(p => p.AuthorId == friend!.Id);
@@ -239,7 +239,7 @@ namespace Tests
 
             var friends = new List<Friendship>
             {
-                new Friendship { UserId = "u1", FriendId = "u3" }
+                new Friendship { UserId = "u4", FriendId = "u3" }
             };
 
             var queryParams = new QueryParams { Page = 1, PageSize = 10 };
@@ -326,7 +326,7 @@ namespace Tests
                 Id = 99,
                 AuthorId = user!.Id,
                 Content = "Test",
-                CreatedAt = DateTime.Now.AddMinutes(-60)
+                CreatedAt = DateTime.UtcNow.AddMinutes(-60)
             };
 
             await _context.Posts.AddAsync(post);
@@ -361,7 +361,7 @@ namespace Tests
                 Id = 99,
                 AuthorId = user!.Id,
                 Content = "Test",
-                CreatedAt = DateTime.Now.AddMinutes(-60)
+                CreatedAt = DateTime.UtcNow.AddMinutes(-60)
             };
 
             await _context.Posts.AddAsync(post);
@@ -407,7 +407,8 @@ namespace Tests
             _context.Users.AddRange(
                 new ApplicationUser { Id = "u1", UserName = "User1" },
                 new ApplicationUser { Id = "u2", UserName = "User2" },
-                new ApplicationUser { Id = "u3", UserName = "User3" }
+                new ApplicationUser { Id = "u3", UserName = "User3" },
+                new ApplicationUser { Id = "u4", UserName = "User4" }
             );
 
             _context.Posts.AddRange(
