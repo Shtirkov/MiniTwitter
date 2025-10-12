@@ -21,19 +21,14 @@ namespace MiniTwitter
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("FrontendCors", policy =>
+                options.AddPolicy("AllowAll", policy =>
                 {
-                    policy.WithOrigins(
-                                        "http://localhost",
-                                        "http://127.0.0.1",
-                                        "http://localhost:5173"
-                                      )
-                          .AllowAnyHeader()
-                          .AllowAnyMethod()
-                          .AllowCredentials();
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
                 });
             });
-
 
             // Add services to the container.
 
@@ -158,6 +153,8 @@ namespace MiniTwitter
             });
 
             var app = builder.Build();
+            app.UseCors("AllowAll");
+
 
             using (var scope = app.Services.CreateScope())
             {

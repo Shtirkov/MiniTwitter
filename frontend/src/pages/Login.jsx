@@ -4,7 +4,8 @@ import loginBackground from '../assets/loginBackground.png'
 import { useNavigate } from "react-router-dom";
 //import { API_BASE } from "../api";
 
-const API = import.meta.env.VITE_API_URL;
+const API_URL = "https://minitwitter-api-v1-0.onrender.com/api";
+
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const response = await fetch(`${API}/Auth/login`, {
+            const response = await fetch(`${API_URL}/Auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),

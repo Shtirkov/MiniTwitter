@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 //import { API_BASE } from "../api";
 
-const API = import.meta.env.VITE_API_URL;
+const API_URL = "https://minitwitter-api-v1-0.onrender.com/api";
+
 
 export default function Register() {
     const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ export default function Register() {
         e.preventDefault();
 
         try {
-            const response = await fetch(`${API}/Auth/register`, {
+            const response = await fetch(`${API_URL}/Auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, email, password }),

@@ -11,7 +11,7 @@ import {
 import { useState, useEffect } from "react";
 //import { API_BASE as API } from "../api";
 
-const API = import.meta.env.VITE_API_URL;
+const API_URL = "https://minitwitter-api-v1-0.onrender.com/api";
 
 export default function Feed() {
     const [posts, setPosts] = useState([]);
@@ -23,7 +23,7 @@ export default function Feed() {
     useEffect(() => {
         const fetchFeed = async () => {
             try {
-                const res = await fetch(`${API}/posts/feed`, {
+                const res = await fetch(`${API_URL}/posts/feed`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!res.ok) throw new Error(await res.text());
@@ -39,7 +39,7 @@ export default function Feed() {
     const handlePost = async () => {
         if (!newPost.trim()) return;
         try {
-            const res = await fetch(`${API}/posts/create`, {
+            const res = await fetch(`${API_URL}/posts/create`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export default function Feed() {
 
     const handleLike = async (postId) => {
         try {
-            const res = await fetch(`${API}/posts/like/${postId}`, {
+            const res = await fetch(`${API_URL}/posts/like/${postId}`, {
                 method: "POST",
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -72,7 +72,7 @@ export default function Feed() {
 
     const handleDeletePost = async (postId) => {
         try {
-            const res = await fetch(`${API}/posts/${postId}`, {
+            const res = await fetch(`${API_URL}/posts/${postId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -87,7 +87,7 @@ export default function Feed() {
         const content = (newCommentByPost[postId] || "").trim();
         if (!content) return;
         try {
-            const res = await fetch(`${API}/comments/post/${postId}`, {
+            const res = await fetch(`${API_URL}/comments/post/${postId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -110,7 +110,7 @@ export default function Feed() {
 
     const handleDeleteComment = async (postId, commentId) => {
         try {
-            const res = await fetch(`${API}/comments/${commentId}`, {
+            const res = await fetch(`${API_URL}/comments/${commentId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
             });

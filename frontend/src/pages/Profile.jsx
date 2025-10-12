@@ -13,7 +13,8 @@ import { useEffect, useState } from "react";
 //import { API_BASE as API } from "../api";
 
 
-const API = import.meta.env.VITE_API_URL;
+const API_URL = "https://minitwitter-api-v1-0.onrender.com/api";
+
 
 
 export default function Profile() {
@@ -28,7 +29,7 @@ export default function Profile() {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const res = await fetch(`${API}/posts/user/${currentUser}`, {
+                const res = await fetch(`${API_URL}/posts/user/${currentUser}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!res.ok) throw new Error(await res.text());
@@ -44,7 +45,7 @@ export default function Profile() {
     useEffect(() => {
         const fetchFriends = async () => {
             try {
-                const res = await fetch(`${API}/friendships/friends`, {
+                const res = await fetch(`${API_URL}/friendships/friends`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!res.ok) throw new Error(await res.text());
@@ -60,7 +61,7 @@ export default function Profile() {
     useEffect(() => {
         const fetchRequests = async () => {
             try {
-                const res = await fetch(`${API}/friendships/pendingRequests`, {
+                const res = await fetch(`${API_URL}/friendships/pendingRequests`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!res.ok) throw new Error(await res.text());
@@ -76,7 +77,7 @@ export default function Profile() {
     const handleSendRequest = async () => {
         if (!newFriend.trim()) return;
         try {
-            const res = await fetch(`${API}/friendships/send/${newFriend}`, {
+            const res = await fetch(`${API_URL}/friendships/send/${newFriend}`, {
                 method: "POST",
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -102,7 +103,7 @@ export default function Profile() {
 
     const handleAccept = async (username) => {
         try {
-            const res = await fetch(`${API}/friendships/accept/${username}`, {
+            const res = await fetch(`${API_URL}/friendships/accept/${username}`, {
                 method: "PUT",
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -131,7 +132,7 @@ export default function Profile() {
 
     const handleReject = async (username) => {
         try {
-            const res = await fetch(`${API}/friendships/reject/${username}`, {
+            const res = await fetch(`${API_URL}/friendships/reject/${username}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -158,7 +159,7 @@ export default function Profile() {
 
     const handleDeletePost = async (id) => {
         try {
-            const res = await fetch(`${API}/posts/${id}`, {
+            const res = await fetch(`${API_URL}/posts/${id}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
             });
