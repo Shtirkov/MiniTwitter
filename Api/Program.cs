@@ -163,8 +163,6 @@ namespace MiniTwitter
                 Console.WriteLine("Database migrations applied successfully.");
             }
 
-            app.UseCors("FrontendCors");
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

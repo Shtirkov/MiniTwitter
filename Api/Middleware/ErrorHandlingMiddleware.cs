@@ -29,9 +29,13 @@
 
                 var response = new
                 {
-                    status = context.Response.StatusCode,
-                    error = "InternalServerError",
-                    details = ex.Message
+                    success = false,
+                    data = (object?)null,
+                    error = new
+                    {
+                        code = "INTERNAL_SERVER_ERROR",
+                        message = "An unexpected error occurred. Please try again later."
+                    }
                 };
 
                 await context.Response.WriteAsync(JsonSerializer.Serialize(response));

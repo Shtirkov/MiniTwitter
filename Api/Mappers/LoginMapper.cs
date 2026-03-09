@@ -1,16 +1,16 @@
-﻿using MiniTwitter.Models;
+using MiniTwitter.Models;
 using MiniTwitter.ResponseModels;
 
 namespace MiniTwitter.Mappers
 {
-    public static class LoginMapper
+    public static class AuthMapper
     {
-        public static LoginResponseDto ToLoginDto(this ApplicationUser user, string token)
+        public static AuthResponseDto ToAuthDto(this ApplicationUser user, string token)
         {
-            return new LoginResponseDto
+            return new AuthResponseDto
             {
-                Email = user.Email!,
-                Username = user.UserName!,
+                Email = user.Email ?? throw new InvalidOperationException(GlobalConstants.UserEmailNullErrorMessage),
+                Username = user.UserName ?? throw new InvalidOperationException(GlobalConstants.UserUsernameNullErrorMessage),
                 Token = token
             };
         }

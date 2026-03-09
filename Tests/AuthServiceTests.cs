@@ -98,6 +98,22 @@ namespace Tests
         }
 
         [Fact]
+        public async Task GetUserAsyncShouldReturnNullWhenUserDoNotExist()
+        {
+            // Arrange
+            var principal = new ClaimsPrincipal();
+            _mockUserManager
+                .Setup(m => m.GetUserAsync(principal))
+                .ReturnsAsync((ApplicationUser?)null);
+
+            // Act
+            var result = await _service.GetUserAsync(principal);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Fact]
         public void IsSignedInShouldReturnTrueWhenSignedIn()
         {
             // Arrange

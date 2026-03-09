@@ -43,7 +43,7 @@ namespace MiniTwitter.Services
 
         public async Task SignInAsync(ApplicationUser user, bool isPersistent)
         {
-            await _signInManager.SignInAsync(user, false);
+            await _signInManager.SignInAsync(user, isPersistent);
         }
 
         public async Task SignOutAsync(ApplicationUser user)

@@ -45,7 +45,7 @@ namespace MiniTwitter.Controllers
             if (result.Succeeded)
             {
                 var token = await _tokenService.CreateToken(user);
-                return Ok(user.ToRegisterDto(token));
+                return Ok(user.ToAuthDto(token));
             }
 
             foreach (var error in result.Errors)
@@ -66,18 +66,40 @@ namespace MiniTwitter.Controllers
 
             var user = await _authService.FindUserByEmailAsync(model.Email);
 
-            var passwordCheck = await _authService.CheckUserPasswordAsync(user!, model.Password, true);
+            if(user == null)
+            {
+                return Unauthorized(new {
+                    success = false,
+                    data = (object?)null,
+                    error = new
+                    {
+                        code = "INVALID_CREDENTIALS",
+                        message = GlobalConstants.InvalidEmailOrPasswordErrorMessage
+                    }
+                });
+            }
+
+            var passwordCheck = await _authService.CheckUserPasswordAsync(user, model.Password, true);
 
             if (!passwordCheck.Succeeded)
             {
-                return Unauthorized(new { Error = GlobalConstants.InvalidEmailOrPasswordErrorMessage });
+                return Unauthorized(new
+                {
+                    success = false,
+                    data = (object?)null,
+                    error = new
+                    {
+                        code = "INVALID_CREDENTIALS",
+                        message = GlobalConstants.InvalidEmailOrPasswordErrorMessage
+                    }
+                });
             }
 
-            await _authService.SignInAsync(user!, false);
+            await _authService.SignInAsync(user, false);
 
-            var token = await _tokenService.CreateToken(user!);
+            var token = await _tokenService.CreateToken(user);
 
-            return Ok(user!.ToLoginDto(token));
+            return Ok(user.ToAuthDto(token));
         }
 
         [HttpPost("logout")]
@@ -86,7 +108,21 @@ namespace MiniTwitter.Controllers
         {
             var user = await _authService.GetUserAsync(User);
 
-            await _authService.SignOutAsync(user!);
+            if (user == null)
+            {
+                return Unauthorized(new
+                {
+                    success = false,
+                    data = (object?)null,
+                    error = new
+                    {
+                        code = "INVALID_CREDENTIALS",
+                        message = GlobalConstants.UserNotSignedInErrorMessage
+                    }
+                });
+            }
+
+            await _authService.SignOutAsync(user);
             return NoContent();
         }
     }
