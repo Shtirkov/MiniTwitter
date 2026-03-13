@@ -95,8 +95,6 @@ namespace MiniTwitter.Controllers
                 });
             }
 
-            await _authService.SignInAsync(user, false);
-
             var token = await _tokenService.CreateToken(user);
 
             return Ok(user.ToAuthDto(token));
@@ -116,7 +114,7 @@ namespace MiniTwitter.Controllers
                     data = (object?)null,
                     error = new
                     {
-                        code = "INVALID_CREDENTIALS",
+                        code = "USER_NOT_SIGNED_IN",
                         message = GlobalConstants.UserNotSignedInErrorMessage
                     }
                 });

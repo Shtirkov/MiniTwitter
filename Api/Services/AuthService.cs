@@ -36,16 +36,6 @@ namespace MiniTwitter.Services
             return await _userManager.GetUserAsync(principal);
         }
 
-        public bool IsSignedIn(ClaimsPrincipal user)
-        {
-            return _signInManager.IsSignedIn(user);
-        }
-
-        public async Task SignInAsync(ApplicationUser user, bool isPersistent)
-        {
-            await _signInManager.SignInAsync(user, isPersistent);
-        }
-
         public async Task SignOutAsync(ApplicationUser user)
         {
             await _userManager.UpdateSecurityStampAsync(user);

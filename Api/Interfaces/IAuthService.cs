@@ -11,10 +11,7 @@ namespace MiniTwitter.Interfaces
         public Task<IdentityResult> CreateUserAsync(ApplicationUser user, string password);
 
         public Task<SignInResult> CheckUserPasswordAsync(ApplicationUser user, string password, bool lockoutOnFailure);
-
-        public Task SignInAsync(ApplicationUser user, bool isPersistent);
-
-        public bool IsSignedIn(ClaimsPrincipal principal);
+       
 
         public Task SignOutAsync(ApplicationUser user);
 

@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using MiniTwitter.Interfaces;
 using MiniTwitter.Models;
 using MiniTwitter.Services;
 using Moq;
@@ -38,14 +39,30 @@ namespace Tests
             // Arrange
             var user = new ApplicationUser { Id = "u1", Email = "test@example.com" };
             _mockSignInManager
-                .Setup(s => s.CheckPasswordSignInAsync(user, "Password123", false))
+                .Setup(s => s.CheckPasswordSignInAsync(user, "Password123", true))
                 .ReturnsAsync(SignInResult.Success);
 
             // Act
-            var result = await _service.CheckUserPasswordAsync(user, "Password123", false);
+            var result = await _service.CheckUserPasswordAsync(user, "Password123", true);
 
             // Assert
             result.Should().Be(SignInResult.Success);
+        }
+
+        [Fact]
+        public async Task CheckUserPasswordAsyncShouldReturnSignInResultOnFailure()
+        {
+            // Arrange
+            var user = new ApplicationUser { Id = "u1", Email = "test@example.com" };
+            _mockSignInManager
+                .Setup(s => s.CheckPasswordSignInAsync(user, "Password123", true))
+                .ReturnsAsync(SignInResult.Failed);
+
+            // Act
+            var result = await _service.CheckUserPasswordAsync(user, "Password123", true);
+
+            // Assert
+            result.Should().Be(SignInResult.Failed);
         }
 
         [Fact]
@@ -112,36 +129,7 @@ namespace Tests
             // Assert
             result.Should().BeNull();
         }
-
-        [Fact]
-        public void IsSignedInShouldReturnTrueWhenSignedIn()
-        {
-            // Arrange
-            var principal = new ClaimsPrincipal();
-            _mockSignInManager
-                .Setup(s => s.IsSignedIn(principal))
-                .Returns(true);
-
-            // Act
-            var result = _service.IsSignedIn(principal);
-
-            // Assert
-            result.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task SignInAsyncShouldCallSignInManager()
-        {
-            // Arrange
-            var user = new ApplicationUser { Id = "u1", Email = "signin@example.com" };
-
-            // Act
-            await _service.SignInAsync(user, false);
-
-            // Assert
-            _mockSignInManager.Verify(s => s.SignInAsync(user, false, null), Times.Once);
-        }
-
+        
         [Fact]
         public async Task SignOutAsyncShouldUpdateSecurityStamp()
         {
