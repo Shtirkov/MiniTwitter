@@ -34,16 +34,19 @@ namespace MiniTwitter.Services
             var query = _context
                 .Posts
                 .Where(p => friendNames.Contains(p.AuthorId))
-                .AsQueryable();
+                .AsQueryable()
+                .AsNoTracking();
 
             var totalCount = await query.CountAsync();
 
             var items = await query
+                .Include(p => p.Author)
+                .Include(p => p.Comments)
+                .ThenInclude(c => c.Author)
+                .Include(p => p.Likes)
                 .OrderByDescending(p => p.CreatedAt)
                 .Skip((queryParams.Page - 1) * queryParams.PageSize)
                 .Take(queryParams.PageSize)
-                .Include(p => p.Comments)
-                .ThenInclude(c => c.Author)
                 .ToListAsync();
 
             return new PagedResult<Post>

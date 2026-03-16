@@ -169,6 +169,71 @@ namespace Tests
         }
 
         [Fact]
+        public async Task GetFriendsPostsShouldLoadLikes()
+        {
+            // Arrange
+            var user = await _context.Users.FindAsync("u1");
+            var friend = await _context.Users.FindAsync("u2");
+
+            var post = new Post { Id = 99, AuthorId = friend!.Id, Content = "Friend's post", CreatedAt = DateTime.UtcNow };
+            await _context.Posts.AddAsync(post);
+            await _context.SaveChangesAsync();
+
+            var like = new Like
+            {  
+                Id = 100,
+                PostId = post.Id,
+                Post = post,
+                UserId = user!.Id,
+                User = user
+            };
+
+            await _context.Likes.AddAsync(like);
+            await _context.SaveChangesAsync();
+
+            var friends = new List<Friendship>
+            {
+                new Friendship { UserId = user.Id, FriendId = friend.Id }
+            };
+
+            var queryParams = new QueryParams { Page = 1, PageSize = 10 };
+
+            // Act
+            var result = await _service.GetFriendsPosts(user, friends, queryParams);
+
+            // Assert
+            var loadedPost = result.Items.First();
+            loadedPost.TotalLikes.Should().Be(1);
+            loadedPost.Likes.First().UserId.Should().Be(user.Id);
+        }
+
+        [Fact]
+        public async Task GetFriendsPostsShouldLoadAuthor()
+        {
+            // Arrange
+            var user = await _context.Users.FindAsync("u1");
+            var friend = await _context.Users.FindAsync("u2");
+
+            var post = new Post { Id = 99, AuthorId = friend!.Id, Content = "Friend's post", CreatedAt = DateTime.UtcNow };
+            await _context.Posts.AddAsync(post);
+            await _context.SaveChangesAsync();
+
+            var friends = new List<Friendship>
+            {
+                new Friendship { UserId = user!.Id, FriendId = friend.Id }
+            };
+
+            var queryParams = new QueryParams { Page = 1, PageSize = 10 };
+
+            // Act
+            var result = await _service.GetFriendsPosts(user, friends, queryParams);
+
+            // Assert
+            var loadedPost = result.Items.First();
+            loadedPost.Author!.Id.Should().Be(friend.Id);
+        }
+
+        [Fact]
         public async Task GetFriendsPostsShouldLoadCommentsWithAuthor()
         {
             // Arrange
