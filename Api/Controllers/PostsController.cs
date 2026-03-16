@@ -89,7 +89,7 @@ namespace MiniTwitter.Controllers
 
             var isFriend = await _friendshipsService.CheckIfUsersAreFriendsAsync(user!, targetUser);
 
-            if (!isFriend && user != targetUser)
+            if (!isFriend && user.Id != targetUser.Id)
             {
                 return Forbid();
             }
