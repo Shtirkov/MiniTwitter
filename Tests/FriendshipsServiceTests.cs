@@ -204,15 +204,59 @@ namespace Tests
         [Fact]
         public async Task GetPendingFriendshipRequestsShouldReturnNotConfirmedFriendshipRequests()
         {
-            //Arrange
-
-            //Act
+            // Arrange
             var user = await _context.Users.FindAsync("u1");
+
+            // Act
             var pendingRequests = await _service.GetPendingFriendshipRequests(user!);
 
-            //Assert
+            // Assert
             pendingRequests.Should().NotBeNull();
-            pendingRequests.Count().Should().Be(1);
+            pendingRequests.Count.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task GetPendingFriendshipRequestsShouldNotReturnRequestsSentByCurrentUser()
+        {
+            // Arrange
+            var user = await _context.Users.FindAsync("u2");
+
+            // Act
+            var pendingRequests = await _service.GetPendingFriendshipRequests(user!);
+
+            // Assert
+            pendingRequests.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task CheckForPendingFriendRequestShouldReturnRequestsSentToCurrentUser()
+        {
+            // Arrange
+            var user = await _context.Users.FindAsync("u3");
+            var friend = await _context.Users.FindAsync("u2");
+
+            // Act
+            var pendingRequest = await _service.CheckForPendingFriendRequest(user!, friend!);
+
+            // Assert
+            pendingRequest.Should().NotBeNull();
+            pendingRequest.FriendId.Should().Be(user!.Id);
+            pendingRequest.UserId.Should().Be(friend!.Id);
+        }
+
+        [Fact]
+        public async Task CheckForPendingFriendRequestShouldReturnRequestsSentByCurrentUser()
+        {
+            // Arrange
+            var user = await _context.Users.FindAsync("u2");
+            var friend = await _context.Users.FindAsync("u3");
+
+            // Act
+            var pendingRequest = await _service.CheckForPendingFriendRequest(user!, friend!);
+
+            // Assert
+            pendingRequest.Should().NotBeNull();
+            pendingRequest.UserId.Should().Be(user!.Id);
         }
 
         private void SeedData()

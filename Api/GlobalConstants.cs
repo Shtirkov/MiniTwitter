@@ -13,5 +13,6 @@
         public const string NoPendingFriendRequestsErrorMessage = "No pending request from this user.";
         public const string UserEmailNullErrorMessage = "User email is null.";
         public const string UserUsernameNullErrorMessage = "User username is null.";
+        public const string FriendRequestCanNotBeAcceptedByTheCurrentUser = "Friend request can not be accepted by the current user.";
     }
 }
